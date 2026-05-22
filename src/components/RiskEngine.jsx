@@ -137,18 +137,18 @@ function RiskEngine() {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <section className="rounded-xl border border-gray-800 bg-gray-900 p-5">
+      <section className="rounded-xl border border-[#202B43] bg-[#121A2B] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
         <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">Risk Classification Engine</p>
-            <h1 className="mt-2 text-2xl font-semibold text-white">Assess a hypothetical AI system</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-400">
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#C6A664]">Risk Classification Engine</p>
+            <h1 className="mt-2 text-2xl font-semibold text-[#F3F0E8]">Assess a hypothetical AI system</h1>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[#8E96A8]">
               Select the contexts that apply. ThemisOS will estimate the likely EU AI Act risk tier and surface useful references from the current knowledge base.
             </p>
           </div>
           <button
             onClick={resetAnswers}
-            className="self-start rounded-md border border-gray-700 px-3 py-2 text-sm text-gray-300 transition-colors hover:border-gray-500 hover:text-white"
+            className="self-start rounded-md border border-[#202B43] px-3 py-2 text-sm text-[#C7C2B5] transition-colors hover:border-[#3D4D7A] hover:text-[#F3F0E8]"
           >
             Reset
           </button>
@@ -165,16 +165,16 @@ function RiskEngine() {
                 onClick={() => toggleAnswer(question.id)}
                 className={`rounded-lg border p-4 text-left transition-colors ${
                   checked
-                    ? 'border-blue-500/60 bg-blue-500/10'
-                    : 'border-gray-800 bg-gray-950/50 hover:border-gray-700'
+                    ? 'border-[#3D4D7A]/60 bg-[#3D4D7A]/10'
+                    : 'border-[#202B43] bg-[#0B1020]/50 hover:border-[#3D4D7A]'
                 }`}
               >
                 <div className="mb-3 flex items-start justify-between gap-3">
                   <div>
-                    <h2 className="text-sm font-semibold text-white">{question.label}</h2>
-                    <p className="mt-1 text-xs leading-relaxed text-gray-400">{question.description}</p>
+                    <h2 className="text-sm font-semibold text-[#F3F0E8]">{question.label}</h2>
+                    <p className="mt-1 text-xs leading-relaxed text-[#8E96A8]">{question.description}</p>
                   </div>
-                  <span className={`mt-0.5 h-4 w-4 shrink-0 rounded border ${checked ? 'border-blue-400 bg-blue-400' : 'border-gray-600'}`} />
+                  <span className={`mt-0.5 h-4 w-4 shrink-0 rounded border ${checked ? 'border-[#C6A664] bg-[#C6A664]' : 'border-[#3D4D7A]'}`} />
                 </div>
                 <span
                   className="inline-flex rounded-full px-2 py-1 text-xs font-medium"
@@ -188,24 +188,24 @@ function RiskEngine() {
         </div>
       </section>
 
-      <aside className="rounded-xl border border-gray-800 bg-gray-900 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">Estimated Result</p>
-        <div className="mt-3 rounded-lg border border-gray-800 bg-gray-950/70 p-4">
+      <aside className="rounded-xl border border-[#202B43] bg-[#121A2B] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+        <p className="text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Estimated Result</p>
+        <div className="mt-3 rounded-lg border border-[#202B43] bg-[#0B1020]/70 p-4">
           <span
             className="inline-flex rounded-full px-2 py-1 text-xs font-semibold"
             style={{ background: `${result.tier.color}26`, color: result.tier.color }}
           >
             {result.tier.label}
           </span>
-          <p className="mt-3 text-sm leading-relaxed text-gray-300">{result.tier.description}</p>
+          <p className="mt-3 text-sm leading-relaxed text-[#C7C2B5]">{result.tier.description}</p>
         </div>
 
         <div className="mt-5 space-y-5">
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">Reasoning</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Reasoning</h2>
             <ul className="mt-2 space-y-2">
               {result.reasoning.map(reason => (
-                <li key={reason} className="rounded-md border border-gray-800 bg-gray-950/60 p-3 text-xs leading-relaxed text-gray-300">
+                <li key={reason} className="rounded-md border border-[#202B43] bg-[#0B1020]/60 p-3 text-xs leading-relaxed text-[#C7C2B5]">
                   {reason}
                 </li>
               ))}
@@ -213,10 +213,10 @@ function RiskEngine() {
           </div>
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">Relevant References</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Relevant References</h2>
             <div className="mt-2 flex flex-wrap gap-2">
               {result.articles.map(article => (
-                <span key={article} className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-1.5 text-xs text-blue-300">
+                <span key={article} className="rounded-md border border-[#3D4D7A]/20 bg-[#3D4D7A]/10 px-2 py-1.5 text-xs text-[#D8BC7A]">
                   {article}
                 </span>
               ))}
@@ -224,19 +224,19 @@ function RiskEngine() {
           </div>
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-500">Likely Obligations</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Likely Obligations</h2>
             <ul className="mt-2 space-y-2">
               {result.obligations.map(obligation => (
-                <li key={obligation} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-3 text-xs leading-relaxed text-gray-300">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                <li key={obligation} className="flex gap-2 rounded-md border border-[#202B43] bg-[#0B1020]/60 p-3 text-xs leading-relaxed text-[#C7C2B5]">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C6A664]" />
                   {obligation}
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="rounded-lg border border-gray-800 bg-gray-950/70 p-3">
-            <p className="text-xs leading-relaxed text-gray-400">
+          <div className="rounded-lg border border-[#202B43] bg-[#0B1020]/70 p-3">
+            <p className="text-xs leading-relaxed text-[#8E96A8]">
               {selectedCount} signal{selectedCount === 1 ? '' : 's'} selected. This is an educational screening tool, not legal advice. A final classification requires legal review of the exact system, provider/deployer role, intended purpose, users, market context, and applicable exceptions.
             </p>
           </div>

@@ -3,10 +3,10 @@ import * as d3 from 'd3'
 import data from '../data/eu-ai-act.json'
 
 const TIER_COLORS = {
-  unacceptable: '#A32D2D',
-  high: '#BA7517',
-  limited: '#185FA5',
-  minimal: '#3B6D11',
+  unacceptable: '#A63A50',
+  high: '#B7791F',
+  limited: '#3567B7',
+  minimal: '#2F855A',
 }
 
 const TIER_LABELS = {
@@ -96,6 +96,7 @@ function ExplorerGraph() {
   const [activeDomain, setActiveDomain] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [graphWidth, setGraphWidth] = useState(0)
+  const [layoutVersion, setLayoutVersion] = useState(0)
   const [tooltip, setTooltip] = useState(null)
 
   const resetView = useCallback(() => {
@@ -105,6 +106,12 @@ function ExplorerGraph() {
     svg.transition()
       .duration(350)
       .call(zoom.transform, d3.zoomIdentity)
+  }, [])
+
+  const resetLayout = useCallback(() => {
+    setSelected(null)
+    setTooltip(null)
+    setLayoutVersion(version => version + 1)
   }, [])
 
   useEffect(() => {
@@ -225,7 +232,7 @@ function ExplorerGraph() {
           return d.type === 'tier' ? 0.9 : 0.7
         })
         .attr('stroke', d => {
-          if (state === 'hover' || state === 'selected') return '#f9fafb'
+          if (state === 'hover' || state === 'selected') return '#F3F0E8'
           return d.color
         })
         .attr('stroke-width', d => {
@@ -235,7 +242,7 @@ function ExplorerGraph() {
         })
 
       selection.select('rect')
-        .attr('stroke', state === 'hover' || state === 'selected' ? '#f9fafb' : '#374151')
+        .attr('stroke', state === 'hover' || state === 'selected' ? '#C6A664' : '#202B43')
         .attr('fill-opacity', state === 'hover' || state === 'selected' ? 1 : 0.92)
     }
 
@@ -252,8 +259,8 @@ function ExplorerGraph() {
       .force('link', d3.forceLink(links).id(d => d.id).distance(activeTier ? 125 : 95).strength(0.55))
       .force('charge', d3.forceManyBody().strength(d => d.type === 'tier' ? -700 : -135))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('clusterX', d3.forceX(d => tierAnchors[d.tier]?.x || width / 2).strength(d => d.type === 'tier' ? 0.34 : 0.12))
-      .force('clusterY', d3.forceY(d => tierAnchors[d.tier]?.y || height / 2).strength(d => d.type === 'tier' ? 0.34 : 0.12))
+      .force('clusterX', d3.forceX(d => tierAnchors[d.tier]?.x || width / 2).strength(d => d.type === 'tier' ? 0.2 : 0.045))
+      .force('clusterY', d3.forceY(d => tierAnchors[d.tier]?.y || height / 2).strength(d => d.type === 'tier' ? 0.2 : 0.045))
       .force('collision', d3.forceCollide().radius(d => d.type === 'tier' ? 72 : 56).strength(0.9))
 
     const link = graphLayer.append('g')
@@ -273,19 +280,17 @@ function ExplorerGraph() {
         .on('start', (event, d) => {
           event.sourceEvent.stopPropagation()
           if (!event.active) simulation.alphaTarget(0.3).restart()
-          d.fx = d.x
-          d.fy = d.y
+          d.fx = clamp(d.x, 75, width - 75)
+          d.fy = clamp(d.y, 65, height - 70)
         })
         .on('drag', (event, d) => {
           event.sourceEvent.stopPropagation()
-          d.fx = event.x
-          d.fy = event.y
+          d.fx = clamp(event.x, 75, width - 75)
+          d.fy = clamp(event.y, 65, height - 70)
         })
-        .on('end', (event, d) => {
+        .on('end', event => {
           event.sourceEvent.stopPropagation()
           if (!event.active) simulation.alphaTarget(0)
-          d.fx = null
-          d.fy = null
         })
       )
       .on('click', (event, d) => {
@@ -328,6 +333,13 @@ function ExplorerGraph() {
         resetNodeStates()
         setTooltip(null)
       })
+      .on('dblclick', (event, d) => {
+        event.stopPropagation()
+        d.fx = null
+        d.fy = null
+        simulation.alphaTarget(0.18).restart()
+        window.setTimeout(() => simulation.alphaTarget(0), 220)
+      })
 
     node.append('circle')
       .attr('r', d => d.type === 'tier' ? 28 : 16)
@@ -347,9 +359,9 @@ function ExplorerGraph() {
       .attr('width', 144)
       .attr('height', 20)
       .attr('rx', 4)
-      .attr('fill', '#111827')
+      .attr('fill', '#121A2B')
       .attr('fill-opacity', 0.92)
-      .attr('stroke', '#374151')
+      .attr('stroke', '#202B43')
       .attr('stroke-opacity', 0.75)
 
     label.append('text')
@@ -384,7 +396,7 @@ function ExplorerGraph() {
       simulation.stop()
       zoomRef.current = null
     }
-  }, [activeDomain, activeTier, graphWidth, searchQuery])
+  }, [activeDomain, activeTier, graphWidth, layoutVersion, searchQuery])
 
   const searchTerm = searchQuery.trim().toLowerCase()
   const baseUseCases = activeTier
@@ -399,7 +411,7 @@ function ExplorerGraph() {
   return (
     <div className="flex flex-col gap-6 xl:flex-row">
       <div className="flex min-w-0 flex-1 flex-col gap-4">
-        <div className="grid gap-3 rounded-lg border border-gray-800 bg-gray-900/70 p-3">
+        <div className="grid gap-3 rounded-lg border border-[#202B43] bg-[#121A2B]/70 p-3">
           <input
             value={searchQuery}
             onChange={event => {
@@ -408,7 +420,7 @@ function ExplorerGraph() {
               setTooltip(null)
             }}
             placeholder="Search use cases, domains, articles..."
-            className="w-full rounded-md border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-gray-500 focus:border-blue-500"
+            className="w-full rounded-md border border-[#202B43] bg-[#0B1020] px-3 py-2 text-sm text-[#F3F0E8] outline-none transition-colors placeholder:text-[#8E96A8] focus:border-[#3D4D7A]"
           />
 
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -418,7 +430,7 @@ function ExplorerGraph() {
                 setSelected(null)
                 setTooltip(null)
               }}
-              className="shrink-0 rounded-full border border-gray-600 px-3 py-1.5 text-xs transition-all"
+              className="shrink-0 rounded-full border border-[#3D4D7A] px-3 py-1.5 text-xs transition-all"
               style={{
                 color: activeTier === null ? '#fff' : '#9ca3af',
                 background: activeTier === null ? '#374151' : 'transparent',
@@ -455,8 +467,8 @@ function ExplorerGraph() {
               }}
               className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                 activeDomain === null
-                  ? 'border-gray-500 bg-gray-700 text-white'
-                  : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                  ? 'border-[#3D4D7A] bg-[#202B43] text-[#F3F0E8]'
+                  : 'border-[#202B43] text-[#8E96A8] hover:border-[#3D4D7A] hover:text-[#C7C2B5]'
               }`}
             >
               All domains
@@ -471,8 +483,8 @@ function ExplorerGraph() {
                 }}
                 className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                   activeDomain === domain.id
-                    ? 'border-blue-500 bg-blue-500/20 text-blue-200'
-                    : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                    ? 'border-[#3D4D7A] bg-[#3D4D7A]/20 text-[#F3F0E8]'
+                    : 'border-[#202B43] text-[#8E96A8] hover:border-[#3D4D7A] hover:text-[#C7C2B5]'
                 }`}
               >
                 {domain.label}
@@ -480,7 +492,7 @@ function ExplorerGraph() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
+          <div className="flex items-center justify-between gap-3 text-xs text-[#8E96A8]">
             <span>{filteredUseCases.length} matching use case{filteredUseCases.length === 1 ? '' : 's'}</span>
             {(activeTier || activeDomain || searchQuery) && (
               <button
@@ -491,7 +503,7 @@ function ExplorerGraph() {
                   setSelected(null)
                   setTooltip(null)
                 }}
-                className="text-gray-400 transition-colors hover:text-white"
+                className="text-[#8E96A8] transition-colors hover:text-[#F3F0E8]"
               >
                 Clear filters
               </button>
@@ -499,7 +511,7 @@ function ExplorerGraph() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#8E96A8]">
           {data.risk_tiers.map(t => (
             <div key={t.id} className="flex items-center gap-2">
               <span
@@ -510,20 +522,29 @@ function ExplorerGraph() {
             </div>
           ))}
         </div>
-        <div ref={graphContainerRef} className="relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
-          <button
-            onClick={resetView}
-            disabled={isEmpty}
-            className="absolute right-3 top-3 z-10 rounded-md border border-gray-700 bg-gray-950/90 px-3 py-1.5 text-xs text-gray-200 shadow-lg transition-colors hover:border-gray-500 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            Reset view
-          </button>
+        <div ref={graphContainerRef} className="relative rounded-xl border border-[#202B43] bg-[#121A2B] overflow-hidden">
+          <div className="absolute right-3 top-3 z-10 flex gap-2">
+            <button
+              onClick={resetView}
+              disabled={isEmpty}
+              className="rounded-md border border-[#202B43] bg-[#121A2B]/95 px-3 py-1.5 text-xs text-[#C7C2B5] shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-[#C6A664]/60 hover:bg-[#1A2438] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Reset View
+            </button>
+            <button
+              onClick={resetLayout}
+              disabled={isEmpty}
+              className="rounded-md border border-[#C6A664]/40 bg-[#1E2A44] px-3 py-1.5 text-xs font-medium text-[#F3F0E8] shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-[#D8BC7A] hover:bg-[#202B43] disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Reset Layout
+            </button>
+          </div>
           <svg ref={svgRef} className="w-full" style={{ height: 600 }} />
           {isEmpty && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-950/70 px-6 text-center">
-              <div className="max-w-sm rounded-lg border border-gray-800 bg-gray-950/95 p-5 shadow-xl">
-                <p className="text-sm font-semibold text-white">No matching use cases</p>
-                <p className="mt-2 text-xs leading-relaxed text-gray-400">
+            <div className="absolute inset-0 flex items-center justify-center bg-[#0B1020]/70 px-6 text-center">
+              <div className="max-w-sm rounded-lg border border-[#202B43] bg-[#0B1020]/95 p-5 shadow-xl">
+                <p className="text-sm font-semibold text-[#F3F0E8]">No matching use cases</p>
+                <p className="mt-2 text-xs leading-relaxed text-[#8E96A8]">
                   Try clearing the search, choosing another domain, or switching risk tiers.
                 </p>
               </div>
@@ -531,7 +552,7 @@ function ExplorerGraph() {
           )}
           {tooltip && (
             <div
-              className="pointer-events-none absolute z-20 w-64 rounded-md border border-gray-700 bg-gray-950/95 p-3 text-xs shadow-xl"
+              className="pointer-events-none absolute z-20 w-64 rounded-md border border-[#202B43] bg-[#0B1020]/95 p-3 text-xs shadow-xl"
               style={{
                 left: Math.min(tooltip.x + 14, Math.max(graphWidth - 280, 12)),
                 top: Math.max(tooltip.y - 12, 12),
@@ -542,14 +563,14 @@ function ExplorerGraph() {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ background: tooltip.color }}
                 />
-                <span className="font-semibold text-white">{tooltip.title}</span>
+                <span className="font-semibold text-[#F3F0E8]">{tooltip.title}</span>
               </div>
-              <p className="mb-2 text-gray-400">{tooltip.tierLabel}</p>
+              <p className="mb-2 text-[#8E96A8]">{tooltip.tierLabel}</p>
               {tooltip.description && (
-                <p className="line-clamp-3 leading-relaxed text-gray-300">{tooltip.description}</p>
+                <p className="line-clamp-3 leading-relaxed text-[#C7C2B5]">{tooltip.description}</p>
               )}
               {tooltip.article && (
-                <p className="mt-2 text-blue-400">{tooltip.article}</p>
+                <p className="mt-2 text-[#C6A664]">{tooltip.article}</p>
               )}
             </div>
           )}
@@ -557,10 +578,10 @@ function ExplorerGraph() {
       </div>
 
       {selected && (
-        <div className="flex max-h-none w-full shrink-0 flex-col gap-4 overflow-y-auto rounded-xl border border-gray-800 bg-gray-900 p-5 xl:max-h-[660px] xl:w-80">
+        <div className="flex max-h-none w-full shrink-0 flex-col gap-4 overflow-y-auto rounded-xl border border-[#202B43] bg-[#121A2B] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.22)] xl:max-h-[660px] xl:w-80">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-sm font-semibold text-white leading-snug">{selected.label}</h2>
-            <button onClick={() => setSelected(null)} className="text-gray-500 hover:text-white text-lg leading-none">×</button>
+            <h2 className="text-sm font-semibold text-[#F3F0E8] leading-snug">{selected.label}</h2>
+            <button onClick={() => setSelected(null)} className="text-[#8E96A8] hover:text-[#F3F0E8] text-lg leading-none">×</button>
           </div>
 
           {selected.tierLabel && (
@@ -572,10 +593,10 @@ function ExplorerGraph() {
 
           {selected.nodeType === 'usecase' && selected.domains && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Domains</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Domains</p>
               <div className="flex flex-wrap gap-1.5">
                 {getDomainLabels(selected.domains).map(domain => (
-                  <span key={domain} className="rounded-full border border-gray-700 px-2 py-1 text-xs text-gray-300">
+                  <span key={domain} className="rounded-full border border-[#202B43] px-2 py-1 text-xs text-[#C7C2B5]">
                     {domain}
                   </span>
                 ))}
@@ -584,23 +605,23 @@ function ExplorerGraph() {
           )}
 
           {selected.description && (
-            <p className="text-xs text-gray-400 leading-relaxed">{selected.description}</p>
+            <p className="text-xs text-[#8E96A8] leading-relaxed">{selected.description}</p>
           )}
 
           {selected.article_reference && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Article Reference</p>
-              <p className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-1.5 text-xs text-blue-300">{selected.article_reference}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Article Reference</p>
+              <p className="rounded-md border border-[#3D4D7A]/20 bg-[#3D4D7A]/10 px-2 py-1.5 text-xs text-[#D8BC7A]">{selected.article_reference}</p>
             </div>
           )}
 
           {selected.key_obligations && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Key Obligations</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Key Obligations</p>
               <ul className="flex flex-col gap-2">
                 {selected.key_obligations.map((o, i) => (
-                  <li key={i} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-2 text-xs text-gray-300">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />{o}
+                  <li key={i} className="flex gap-2 rounded-md border border-[#202B43] bg-[#0B1020]/60 p-2 text-xs text-[#C7C2B5]">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C6A664]" />{o}
                   </li>
                 ))}
               </ul>
@@ -609,11 +630,11 @@ function ExplorerGraph() {
 
           {selected.obligations && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Obligations</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Obligations</p>
               <ul className="flex flex-col gap-2">
                 {selected.obligations.map((o, i) => (
-                  <li key={i} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-2 text-xs text-gray-300">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />{o}
+                  <li key={i} className="flex gap-2 rounded-md border border-[#202B43] bg-[#0B1020]/60 p-2 text-xs text-[#C7C2B5]">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A63A50]" />{o}
                   </li>
                 ))}
               </ul>
@@ -622,11 +643,11 @@ function ExplorerGraph() {
 
           {selected.real_world_examples && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Real World Examples</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Real World Examples</p>
               <ul className="flex flex-col gap-2">
                 {selected.real_world_examples.map((e, i) => (
-                  <li key={i} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-2 text-xs text-gray-300">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-600" />{e}
+                  <li key={i} className="flex gap-2 rounded-md border border-[#202B43] bg-[#0B1020]/60 p-2 text-xs text-[#C7C2B5]">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8E96A8]" />{e}
                   </li>
                 ))}
               </ul>
@@ -635,15 +656,15 @@ function ExplorerGraph() {
 
           {selected.enforcement_date && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Enforcement Date</p>
-              <p className="rounded-md border border-green-500/20 bg-green-500/10 px-2 py-1.5 text-xs text-green-300">{selected.enforcement_date}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Enforcement Date</p>
+              <p className="rounded-md border border-[#2F855A]/20 bg-[#2F855A]/10 px-2 py-1.5 text-xs text-[#9DCCAE]">{selected.enforcement_date}</p>
             </div>
           )}
 
           {selected.penalty_max && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Maximum Penalty</p>
-              <p className="rounded-md border border-red-500/20 bg-red-500/10 px-2 py-1.5 text-xs text-red-300">{selected.penalty_max}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#8E96A8]">Maximum Penalty</p>
+              <p className="rounded-md border border-[#A63A50]/20 bg-[#A63A50]/10 px-2 py-1.5 text-xs text-[#D8A0A8]">{selected.penalty_max}</p>
             </div>
           )}
         </div>
