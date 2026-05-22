@@ -16,6 +16,12 @@ const TIER_LABELS = {
   minimal: 'Minimal Risk',
 }
 
+const LABEL_LIMIT = 28
+
+function truncateLabel(label) {
+  return label.length > LABEL_LIMIT ? `${label.slice(0, LABEL_LIMIT - 1)}...` : label
+}
+
 function ExplorerGraph() {
   const svgRef = useRef(null)
   const [selected, setSelected] = useState(null)
@@ -31,25 +37,36 @@ function ExplorerGraph() {
       .attr('width', width)
       .attr('height', height)
 
+    const visibleTiers = activeTier
+      ? data.risk_tiers.filter(t => t.id === activeTier)
+      : data.risk_tiers
+
+    const visibleUseCases = activeTier
+      ? data.use_cases.filter(u => u.tier === activeTier)
+      : data.use_cases
+
     const nodes = [
-      ...data.risk_tiers.map(t => ({
+      ...visibleTiers.map(t => ({
         id: t.id,
         label: t.label,
         type: 'tier',
         color: t.color,
+        tier: t.id,
+        tierLabel: t.label,
         data: t,
       })),
-      ...data.use_cases.map(u => ({
+      ...visibleUseCases.map(u => ({
         id: u.id,
         label: u.short_label,
         type: 'usecase',
         tier: u.tier,
         color: TIER_COLORS[u.tier],
+        tierLabel: TIER_LABELS[u.tier],
         data: u,
       })),
     ]
 
-    const links = data.use_cases.map(u => ({
+    const links = visibleUseCases.map(u => ({
       source: u.tier,
       target: u.id,
     }))
@@ -90,7 +107,13 @@ function ExplorerGraph() {
         })
       )
       .on('click', (event, d) => {
-        setSelected(d.data)
+        setSelected({
+          ...d.data,
+          nodeType: d.type,
+          color: d.color,
+          tier: d.tier,
+          tierLabel: d.tierLabel,
+        })
       })
 
     node.append('circle')
@@ -100,16 +123,32 @@ function ExplorerGraph() {
       .attr('stroke', d => d.color)
       .attr('stroke-width', d => d.type === 'tier' ? 2 : 1)
 
-    node.append('text')
+    const label = node.append('g')
+      .attr('pointer-events', 'none')
+      .attr('transform', d => d.type === 'tier' ? 'translate(0,0)' : 'translate(0,30)')
+
+    label.filter(d => d.type === 'usecase')
+      .append('rect')
+      .attr('x', -72)
+      .attr('y', -10)
+      .attr('width', 144)
+      .attr('height', 20)
+      .attr('rx', 4)
+      .attr('fill', '#111827')
+      .attr('fill-opacity', 0.92)
+      .attr('stroke', '#374151')
+      .attr('stroke-opacity', 0.75)
+
+    label.append('text')
       .text(d => d.type === 'tier'
         ? TIER_LABELS[d.id].split(' ')[0]
-        : d.label.length > 18 ? d.label.slice(0, 18) + '…' : d.label
+        : truncateLabel(d.label)
       )
       .attr('text-anchor', 'middle')
-      .attr('dy', d => d.type === 'tier' ? '0.35em' : '2.2em')
+      .attr('dy', '0.35em')
       .attr('fill', '#fff')
-      .attr('font-size', d => d.type === 'tier' ? '11px' : '9px')
-      .attr('pointer-events', 'none')
+      .attr('font-size', d => d.type === 'tier' ? '11px' : '10px')
+      .attr('font-weight', d => d.type === 'tier' ? 700 : 500)
 
     simulation.on('tick', () => {
       link
@@ -128,6 +167,16 @@ function ExplorerGraph() {
     <div className="flex gap-6">
       <div className="flex-1 flex flex-col gap-4">
         <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => setActiveTier(null)}
+            className="text-xs px-3 py-1.5 rounded-full border border-gray-600 transition-all"
+            style={{
+              color: activeTier === null ? '#fff' : '#9ca3af',
+              background: activeTier === null ? '#374151' : 'transparent',
+            }}
+          >
+            All
+          </button>
           {data.risk_tiers.map(t => (
             <button
               key={t.id}
@@ -143,6 +192,17 @@ function ExplorerGraph() {
             </button>
           ))}
         </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400">
+          {data.risk_tiers.map(t => (
+            <div key={t.id} className="flex items-center gap-2">
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ background: t.color }}
+              />
+              <span>{t.label}</span>
+            </div>
+          ))}
+        </div>
         <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
           <svg ref={svgRef} className="w-full" style={{ height: 600 }} />
         </div>
@@ -155,11 +215,18 @@ function ExplorerGraph() {
             <button onClick={() => setSelected(null)} className="text-gray-500 hover:text-white text-lg leading-none">×</button>
           </div>
 
-          {selected.color && (
+          {selected.tierLabel && (
             <span className="text-xs px-2 py-1 rounded-full self-start font-medium"
               style={{ background: selected.color + '33', color: selected.color }}>
-              {TIER_LABELS[selected.id] || TIER_LABELS[selected.tier]}
+              {selected.tierLabel}
             </span>
+          )}
+
+          {selected.nodeType === 'usecase' && selected.domains && (
+            <div>
+              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Domains</p>
+              <p className="text-xs text-gray-300">{selected.domains.join(', ')}</p>
+            </div>
           )}
 
           {selected.description && (
