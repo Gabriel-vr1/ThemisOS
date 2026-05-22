@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import RiskEngine from './components/RiskEngine'
 import Explorer from './pages/Explorer'
 
 const NAV_ITEMS = [
@@ -9,16 +10,6 @@ const NAV_ITEMS = [
 ]
 
 const PLACEHOLDERS = {
-  'risk-engine': {
-    title: 'Risk Engine',
-    eyebrow: 'Coming next',
-    description: 'A guided assessment workspace for mapping AI systems to EU AI Act risk tiers, obligations, evidence, and review steps.',
-    points: [
-      'Structured intake for AI system purpose, users, context, and deployment environment.',
-      'Risk-tier guidance linked back to Explorer classifications and article references.',
-      'Assessment outputs designed for governance review and audit preparation.',
-    ],
-  },
   'research-hub': {
     title: 'Research Hub',
     eyebrow: 'Planned knowledge layer',
@@ -99,9 +90,9 @@ function App() {
           <span className="text-gray-300">{activeLabel}</span>
         </div>
 
-        {activeSection === 'explorer' ? (
-          <Explorer />
-        ) : (
+        {activeSection === 'explorer' && <Explorer />}
+        {activeSection === 'risk-engine' && <RiskEngine />}
+        {activeSection !== 'explorer' && activeSection !== 'risk-engine' && (
           <PlaceholderPage page={PLACEHOLDERS[activeSection]} />
         )}
       </main>
