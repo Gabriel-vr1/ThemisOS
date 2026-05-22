@@ -18,6 +18,10 @@ const TIER_LABELS = {
 
 const LABEL_LIMIT = 28
 const TIER_ORDER = ['unacceptable', 'high', 'limited', 'minimal']
+const DOMAIN_LABELS = data.domains.reduce((labels, domain) => {
+  labels[domain.id] = domain.label
+  return labels
+}, {})
 
 function truncateLabel(label) {
   return label.length > LABEL_LIMIT ? `${label.slice(0, LABEL_LIMIT - 1)}...` : label
@@ -63,6 +67,25 @@ function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value))
 }
 
+function getDomainLabels(domains = []) {
+  return domains.map(domain => DOMAIN_LABELS[domain] || domain)
+}
+
+function matchesSearch(useCase, searchTerm) {
+  if (!searchTerm) return true
+
+  const haystack = [
+    useCase.label,
+    useCase.short_label,
+    useCase.description,
+    useCase.article_reference,
+    ...getDomainLabels(useCase.domains),
+    ...useCase.domains,
+  ].join(' ').toLowerCase()
+
+  return haystack.includes(searchTerm)
+}
+
 function ExplorerGraph() {
   const graphContainerRef = useRef(null)
   const svgRef = useRef(null)
@@ -70,6 +93,8 @@ function ExplorerGraph() {
   const selectedIdRef = useRef(null)
   const [selected, setSelected] = useState(null)
   const [activeTier, setActiveTier] = useState(null)
+  const [activeDomain, setActiveDomain] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const [graphWidth, setGraphWidth] = useState(0)
   const [tooltip, setTooltip] = useState(null)
 
@@ -126,16 +151,25 @@ function ExplorerGraph() {
 
     zoomRef.current = { svg, zoom }
 
-    const visibleTiers = activeTier
-      ? data.risk_tiers.filter(t => t.id === activeTier)
-      : data.risk_tiers
+    const searchTerm = searchQuery.trim().toLowerCase()
 
     const visibleUseCases = activeTier
       ? data.use_cases.filter(u => u.tier === activeTier)
       : data.use_cases
 
+    const filteredUseCases = visibleUseCases.filter(useCase => {
+      const matchesDomain = activeDomain ? useCase.domains.includes(activeDomain) : true
+      return matchesDomain && matchesSearch(useCase, searchTerm)
+    })
+
+    const hasUseCaseFilters = Boolean(activeDomain || searchTerm)
+    const visibleTierIds = new Set(filteredUseCases.map(useCase => useCase.tier))
+    const visibleTiers = activeTier
+      ? data.risk_tiers.filter(t => t.id === activeTier && (!hasUseCaseFilters || visibleTierIds.has(t.id)))
+      : data.risk_tiers.filter(t => !hasUseCaseFilters || visibleTierIds.has(t.id))
+
     const tierAnchors = getTierAnchors(visibleTiers, width, height)
-    const tierUseCaseCounts = visibleUseCases.reduce((counts, useCase) => {
+    const tierUseCaseCounts = filteredUseCases.reduce((counts, useCase) => {
       counts[useCase.tier] = (counts[useCase.tier] || 0) + 1
       return counts
     }, {})
@@ -153,7 +187,7 @@ function ExplorerGraph() {
         y: tierAnchors[t.id].y,
         data: t,
       })),
-      ...visibleUseCases.map(u => {
+      ...filteredUseCases.map(u => {
         const tierIndex = tierUseCaseIndexes[u.tier] || 0
         const seed = getSeedPosition(
           tierAnchors[u.tier],
@@ -178,7 +212,7 @@ function ExplorerGraph() {
       }),
     ]
 
-    const links = visibleUseCases.map(u => ({
+    const links = filteredUseCases.map(u => ({
       source: u.tier,
       target: u.id,
     }))
@@ -350,37 +384,121 @@ function ExplorerGraph() {
       simulation.stop()
       zoomRef.current = null
     }
-  }, [activeTier, graphWidth])
+  }, [activeDomain, activeTier, graphWidth, searchQuery])
+
+  const searchTerm = searchQuery.trim().toLowerCase()
+  const baseUseCases = activeTier
+    ? data.use_cases.filter(useCase => useCase.tier === activeTier)
+    : data.use_cases
+  const filteredUseCases = baseUseCases.filter(useCase => {
+    const matchesDomain = activeDomain ? useCase.domains.includes(activeDomain) : true
+    return matchesDomain && matchesSearch(useCase, searchTerm)
+  })
+  const isEmpty = filteredUseCases.length === 0
 
   return (
-    <div className="flex gap-6">
-      <div className="flex-1 flex flex-col gap-4">
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={() => setActiveTier(null)}
-            className="text-xs px-3 py-1.5 rounded-full border border-gray-600 transition-all"
-            style={{
-              color: activeTier === null ? '#fff' : '#9ca3af',
-              background: activeTier === null ? '#374151' : 'transparent',
+    <div className="flex flex-col gap-6 xl:flex-row">
+      <div className="flex min-w-0 flex-1 flex-col gap-4">
+        <div className="grid gap-3 rounded-lg border border-gray-800 bg-gray-900/70 p-3">
+          <input
+            value={searchQuery}
+            onChange={event => {
+              setSearchQuery(event.target.value)
+              setSelected(null)
+              setTooltip(null)
             }}
-          >
-            All
-          </button>
-          {data.risk_tiers.map(t => (
+            placeholder="Search use cases, domains, articles..."
+            className="w-full rounded-md border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-gray-500 focus:border-blue-500"
+          />
+
+          <div className="flex gap-2 overflow-x-auto pb-1">
             <button
-              key={t.id}
-              onClick={() => setActiveTier(activeTier === t.id ? null : t.id)}
-              className="text-xs px-3 py-1.5 rounded-full border transition-all"
+              onClick={() => {
+                setActiveTier(null)
+                setSelected(null)
+                setTooltip(null)
+              }}
+              className="shrink-0 rounded-full border border-gray-600 px-3 py-1.5 text-xs transition-all"
               style={{
-                borderColor: t.color,
-                color: activeTier === t.id ? '#fff' : t.color,
-                background: activeTier === t.id ? t.color : 'transparent',
+                color: activeTier === null ? '#fff' : '#9ca3af',
+                background: activeTier === null ? '#374151' : 'transparent',
               }}
             >
-              {t.label}
+              All tiers
             </button>
-          ))}
+            {data.risk_tiers.map(t => (
+              <button
+                key={t.id}
+                onClick={() => {
+                  setActiveTier(activeTier === t.id ? null : t.id)
+                  setSelected(null)
+                  setTooltip(null)
+                }}
+                className="shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all"
+                style={{
+                  borderColor: t.color,
+                  color: activeTier === t.id ? '#fff' : t.color,
+                  background: activeTier === t.id ? t.color : 'transparent',
+                }}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex gap-2 overflow-x-auto pb-1">
+            <button
+              onClick={() => {
+                setActiveDomain(null)
+                setSelected(null)
+                setTooltip(null)
+              }}
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
+                activeDomain === null
+                  ? 'border-gray-500 bg-gray-700 text-white'
+                  : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+              }`}
+            >
+              All domains
+            </button>
+            {data.domains.map(domain => (
+              <button
+                key={domain.id}
+                onClick={() => {
+                  setActiveDomain(activeDomain === domain.id ? null : domain.id)
+                  setSelected(null)
+                  setTooltip(null)
+                }}
+                className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
+                  activeDomain === domain.id
+                    ? 'border-blue-500 bg-blue-500/20 text-blue-200'
+                    : 'border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200'
+                }`}
+              >
+                {domain.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-between gap-3 text-xs text-gray-500">
+            <span>{filteredUseCases.length} matching use case{filteredUseCases.length === 1 ? '' : 's'}</span>
+            {(activeTier || activeDomain || searchQuery) && (
+              <button
+                onClick={() => {
+                  setActiveTier(null)
+                  setActiveDomain(null)
+                  setSearchQuery('')
+                  setSelected(null)
+                  setTooltip(null)
+                }}
+                className="text-gray-400 transition-colors hover:text-white"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
         </div>
+
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-gray-400">
           {data.risk_tiers.map(t => (
             <div key={t.id} className="flex items-center gap-2">
@@ -395,11 +513,22 @@ function ExplorerGraph() {
         <div ref={graphContainerRef} className="relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
           <button
             onClick={resetView}
-            className="absolute right-3 top-3 z-10 rounded-md border border-gray-700 bg-gray-950/90 px-3 py-1.5 text-xs text-gray-200 shadow-lg transition-colors hover:border-gray-500 hover:bg-gray-800"
+            disabled={isEmpty}
+            className="absolute right-3 top-3 z-10 rounded-md border border-gray-700 bg-gray-950/90 px-3 py-1.5 text-xs text-gray-200 shadow-lg transition-colors hover:border-gray-500 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
           >
             Reset view
           </button>
           <svg ref={svgRef} className="w-full" style={{ height: 600 }} />
+          {isEmpty && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-950/70 px-6 text-center">
+              <div className="max-w-sm rounded-lg border border-gray-800 bg-gray-950/95 p-5 shadow-xl">
+                <p className="text-sm font-semibold text-white">No matching use cases</p>
+                <p className="mt-2 text-xs leading-relaxed text-gray-400">
+                  Try clearing the search, choosing another domain, or switching risk tiers.
+                </p>
+              </div>
+            </div>
+          )}
           {tooltip && (
             <div
               className="pointer-events-none absolute z-20 w-64 rounded-md border border-gray-700 bg-gray-950/95 p-3 text-xs shadow-xl"
@@ -428,7 +557,7 @@ function ExplorerGraph() {
       </div>
 
       {selected && (
-        <div className="w-80 shrink-0 rounded-xl border border-gray-800 bg-gray-900 p-5 flex flex-col gap-4 overflow-y-auto" style={{ maxHeight: 660 }}>
+        <div className="flex max-h-none w-full shrink-0 flex-col gap-4 overflow-y-auto rounded-xl border border-gray-800 bg-gray-900 p-5 xl:max-h-[660px] xl:w-80">
           <div className="flex items-start justify-between gap-2">
             <h2 className="text-sm font-semibold text-white leading-snug">{selected.label}</h2>
             <button onClick={() => setSelected(null)} className="text-gray-500 hover:text-white text-lg leading-none">×</button>
@@ -443,8 +572,14 @@ function ExplorerGraph() {
 
           {selected.nodeType === 'usecase' && selected.domains && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Domains</p>
-              <p className="text-xs text-gray-300">{selected.domains.join(', ')}</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Domains</p>
+              <div className="flex flex-wrap gap-1.5">
+                {getDomainLabels(selected.domains).map(domain => (
+                  <span key={domain} className="rounded-full border border-gray-700 px-2 py-1 text-xs text-gray-300">
+                    {domain}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
@@ -454,18 +589,18 @@ function ExplorerGraph() {
 
           {selected.article_reference && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Article Reference</p>
-              <p className="text-xs text-blue-400">{selected.article_reference}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Article Reference</p>
+              <p className="rounded-md border border-blue-500/20 bg-blue-500/10 px-2 py-1.5 text-xs text-blue-300">{selected.article_reference}</p>
             </div>
           )}
 
           {selected.key_obligations && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Key Obligations</p>
-              <ul className="flex flex-col gap-1">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Key Obligations</p>
+              <ul className="flex flex-col gap-2">
                 {selected.key_obligations.map((o, i) => (
-                  <li key={i} className="text-xs text-gray-300 flex gap-2">
-                    <span className="text-amber-500 mt-0.5">—</span>{o}
+                  <li key={i} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-2 text-xs text-gray-300">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />{o}
                   </li>
                 ))}
               </ul>
@@ -474,11 +609,11 @@ function ExplorerGraph() {
 
           {selected.obligations && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Obligations</p>
-              <ul className="flex flex-col gap-1">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Obligations</p>
+              <ul className="flex flex-col gap-2">
                 {selected.obligations.map((o, i) => (
-                  <li key={i} className="text-xs text-gray-300 flex gap-2">
-                    <span className="text-red-500 mt-0.5">—</span>{o}
+                  <li key={i} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-2 text-xs text-gray-300">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />{o}
                   </li>
                 ))}
               </ul>
@@ -487,11 +622,11 @@ function ExplorerGraph() {
 
           {selected.real_world_examples && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Real World Examples</p>
-              <ul className="flex flex-col gap-1">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">Real World Examples</p>
+              <ul className="flex flex-col gap-2">
                 {selected.real_world_examples.map((e, i) => (
-                  <li key={i} className="text-xs text-gray-300 flex gap-2">
-                    <span className="text-gray-600 mt-0.5">•</span>{e}
+                  <li key={i} className="flex gap-2 rounded-md border border-gray-800 bg-gray-950/60 p-2 text-xs text-gray-300">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-600" />{e}
                   </li>
                 ))}
               </ul>
@@ -500,15 +635,15 @@ function ExplorerGraph() {
 
           {selected.enforcement_date && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Enforcement Date</p>
-              <p className="text-xs text-green-400">{selected.enforcement_date}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Enforcement Date</p>
+              <p className="rounded-md border border-green-500/20 bg-green-500/10 px-2 py-1.5 text-xs text-green-300">{selected.enforcement_date}</p>
             </div>
           )}
 
           {selected.penalty_max && (
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Maximum Penalty</p>
-              <p className="text-xs text-red-400">{selected.penalty_max}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">Maximum Penalty</p>
+              <p className="rounded-md border border-red-500/20 bg-red-500/10 px-2 py-1.5 text-xs text-red-300">{selected.penalty_max}</p>
             </div>
           )}
         </div>
