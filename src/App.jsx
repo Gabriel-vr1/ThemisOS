@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ResearchHub from './components/ResearchHub'
 import RiskEngine from './components/RiskEngine'
+import Timeline from './components/Timeline'
 import Explorer from './pages/Explorer'
 
 const NAV_ITEMS = [
@@ -9,39 +10,6 @@ const NAV_ITEMS = [
   { id: 'research-hub', label: 'Research Hub' },
   { id: 'timeline', label: 'Timeline' },
 ]
-
-const PLACEHOLDERS = {
-  timeline: {
-    title: 'Timeline',
-    eyebrow: 'Implementation view',
-    description: 'A clear view of EU AI Act milestones, enforcement dates, and compliance windows across obligations and system categories.',
-    points: [
-      'Chronological view of key implementation and enforcement dates.',
-      'Links from deadlines to affected risk tiers, systems, and obligations.',
-      'Future filters for teams tracking readiness across multiple AI systems.',
-    ],
-  },
-}
-
-function PlaceholderPage({ page }) {
-  return (
-    <section className="rounded-xl border border-gray-800 bg-gray-900 p-6">
-      <div className="max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">{page.eyebrow}</p>
-        <h1 className="mt-2 text-2xl font-semibold text-white">{page.title}</h1>
-        <p className="mt-3 text-sm leading-relaxed text-gray-400">{page.description}</p>
-
-        <div className="mt-6 grid gap-3 md:grid-cols-3">
-          {page.points.map(point => (
-            <div key={point} className="rounded-lg border border-gray-800 bg-gray-950/60 p-4">
-              <p className="text-sm leading-relaxed text-gray-300">{point}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
 
 function App() {
   const [activeSection, setActiveSection] = useState('explorer')
@@ -84,9 +52,7 @@ function App() {
         {activeSection === 'explorer' && <Explorer />}
         {activeSection === 'risk-engine' && <RiskEngine />}
         {activeSection === 'research-hub' && <ResearchHub />}
-        {activeSection === 'timeline' && (
-          <PlaceholderPage page={PLACEHOLDERS[activeSection]} />
-        )}
+        {activeSection === 'timeline' && <Timeline />}
       </main>
     </div>
   )
