@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
 import data from '../data/eu-ai-act.json'
 
@@ -23,12 +23,45 @@ function truncateLabel(label) {
 }
 
 function ExplorerGraph() {
+  const graphContainerRef = useRef(null)
   const svgRef = useRef(null)
+  const zoomRef = useRef(null)
+  const selectedIdRef = useRef(null)
   const [selected, setSelected] = useState(null)
   const [activeTier, setActiveTier] = useState(null)
+  const [graphWidth, setGraphWidth] = useState(0)
+  const [tooltip, setTooltip] = useState(null)
+
+  const resetView = useCallback(() => {
+    if (!zoomRef.current) return
+
+    const { svg, zoom } = zoomRef.current
+    svg.transition()
+      .duration(350)
+      .call(zoom.transform, d3.zoomIdentity)
+  }, [])
 
   useEffect(() => {
-    const width = svgRef.current.clientWidth
+    selectedIdRef.current = selected?.id || null
+  }, [selected])
+
+  useEffect(() => {
+    if (!graphContainerRef.current) return undefined
+
+    const observer = new ResizeObserver(entries => {
+      const nextWidth = Math.floor(entries[0].contentRect.width)
+      setGraphWidth(nextWidth)
+    })
+
+    observer.observe(graphContainerRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    if (!svgRef.current || graphWidth <= 0) return undefined
+
+    const width = graphWidth
     const height = 600
 
     d3.select(svgRef.current).selectAll('*').remove()
@@ -36,6 +69,21 @@ function ExplorerGraph() {
     const svg = d3.select(svgRef.current)
       .attr('width', width)
       .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+
+    const graphLayer = svg.append('g')
+
+    const zoom = d3.zoom()
+      .scaleExtent([0.55, 2.8])
+      .on('zoom', event => {
+        graphLayer.attr('transform', event.transform)
+      })
+
+    svg
+      .call(zoom)
+      .on('dblclick.zoom', null)
+
+    zoomRef.current = { svg, zoom }
 
     const visibleTiers = activeTier
       ? data.risk_tiers.filter(t => t.id === activeTier)
@@ -71,13 +119,41 @@ function ExplorerGraph() {
       target: u.id,
     }))
 
+    function setNodeState(selection, state) {
+      selection.select('circle')
+        .attr('fill-opacity', d => {
+          if (state === 'hover') return 1
+          if (state === 'selected') return 1
+          return d.type === 'tier' ? 0.9 : 0.7
+        })
+        .attr('stroke', d => {
+          if (state === 'hover' || state === 'selected') return '#f9fafb'
+          return d.color
+        })
+        .attr('stroke-width', d => {
+          if (state === 'hover') return d.type === 'tier' ? 4 : 3
+          if (state === 'selected') return d.type === 'tier' ? 5 : 4
+          return d.type === 'tier' ? 2 : 1
+        })
+
+      selection.select('rect')
+        .attr('stroke', state === 'hover' || state === 'selected' ? '#f9fafb' : '#374151')
+        .attr('fill-opacity', state === 'hover' || state === 'selected' ? 1 : 0.92)
+    }
+
+    function resetNodeStates() {
+      node.each(function (d) {
+        setNodeState(d3.select(this), d.id === selectedIdRef.current ? 'selected' : 'default')
+      })
+    }
+
     const simulation = d3.forceSimulation(nodes)
       .force('link', d3.forceLink(links).id(d => d.id).distance(120))
       .force('charge', d3.forceManyBody().strength(-300))
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide().radius(50))
 
-    const link = svg.append('g')
+    const link = graphLayer.append('g')
       .selectAll('line')
       .data(links)
       .join('line')
@@ -85,35 +161,69 @@ function ExplorerGraph() {
       .attr('stroke-opacity', 0.3)
       .attr('stroke-width', 1)
 
-    const node = svg.append('g')
+    const node = graphLayer.append('g')
       .selectAll('g')
       .data(nodes)
       .join('g')
       .style('cursor', 'pointer')
       .call(d3.drag()
         .on('start', (event, d) => {
+          event.sourceEvent.stopPropagation()
           if (!event.active) simulation.alphaTarget(0.3).restart()
           d.fx = d.x
           d.fy = d.y
         })
         .on('drag', (event, d) => {
+          event.sourceEvent.stopPropagation()
           d.fx = event.x
           d.fy = event.y
         })
         .on('end', (event, d) => {
+          event.sourceEvent.stopPropagation()
           if (!event.active) simulation.alphaTarget(0)
           d.fx = null
           d.fy = null
         })
       )
       .on('click', (event, d) => {
-        setSelected({
+        event.stopPropagation()
+        const clicked = {
           ...d.data,
           nodeType: d.type,
           color: d.color,
           tier: d.tier,
           tierLabel: d.tierLabel,
+        }
+
+        node.each(function (nodeDatum) {
+          setNodeState(d3.select(this), nodeDatum.id === d.id ? 'selected' : 'default')
         })
+
+        selectedIdRef.current = d.id
+        setSelected(clicked)
+      })
+      .on('mouseenter', function (event, d) {
+        setNodeState(d3.select(this), d.id === selectedIdRef.current ? 'selected' : 'hover')
+        setTooltip({
+          x: event.offsetX,
+          y: event.offsetY,
+          title: d.data.label,
+          tierLabel: d.tierLabel,
+          color: d.color,
+          description: d.data.description,
+          article: d.data.article_reference,
+        })
+      })
+      .on('mousemove', event => {
+        setTooltip(current => current && {
+          ...current,
+          x: event.offsetX,
+          y: event.offsetY,
+        })
+      })
+      .on('mouseleave', function () {
+        resetNodeStates()
+        setTooltip(null)
       })
 
     node.append('circle')
@@ -150,6 +260,8 @@ function ExplorerGraph() {
       .attr('font-size', d => d.type === 'tier' ? '11px' : '10px')
       .attr('font-weight', d => d.type === 'tier' ? 700 : 500)
 
+    resetNodeStates()
+
     simulation.on('tick', () => {
       link
         .attr('x1', d => d.source.x)
@@ -160,8 +272,11 @@ function ExplorerGraph() {
       node.attr('transform', d => `translate(${d.x},${d.y})`)
     })
 
-    return () => simulation.stop()
-  }, [activeTier])
+    return () => {
+      simulation.stop()
+      zoomRef.current = null
+    }
+  }, [activeTier, graphWidth])
 
   return (
     <div className="flex gap-6">
@@ -203,8 +318,38 @@ function ExplorerGraph() {
             </div>
           ))}
         </div>
-        <div className="rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+        <div ref={graphContainerRef} className="relative rounded-xl border border-gray-800 bg-gray-900 overflow-hidden">
+          <button
+            onClick={resetView}
+            className="absolute right-3 top-3 z-10 rounded-md border border-gray-700 bg-gray-950/90 px-3 py-1.5 text-xs text-gray-200 shadow-lg transition-colors hover:border-gray-500 hover:bg-gray-800"
+          >
+            Reset view
+          </button>
           <svg ref={svgRef} className="w-full" style={{ height: 600 }} />
+          {tooltip && (
+            <div
+              className="pointer-events-none absolute z-20 w-64 rounded-md border border-gray-700 bg-gray-950/95 p-3 text-xs shadow-xl"
+              style={{
+                left: Math.min(tooltip.x + 14, Math.max(graphWidth - 280, 12)),
+                top: Math.max(tooltip.y - 12, 12),
+              }}
+            >
+              <div className="mb-1 flex items-center gap-2">
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ background: tooltip.color }}
+                />
+                <span className="font-semibold text-white">{tooltip.title}</span>
+              </div>
+              <p className="mb-2 text-gray-400">{tooltip.tierLabel}</p>
+              {tooltip.description && (
+                <p className="line-clamp-3 leading-relaxed text-gray-300">{tooltip.description}</p>
+              )}
+              {tooltip.article && (
+                <p className="mt-2 text-blue-400">{tooltip.article}</p>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
