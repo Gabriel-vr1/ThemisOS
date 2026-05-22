@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ResearchHub from './components/ResearchHub'
 import RiskEngine from './components/RiskEngine'
 import Explorer from './pages/Explorer'
 
@@ -10,16 +11,6 @@ const NAV_ITEMS = [
 ]
 
 const PLACEHOLDERS = {
-  'research-hub': {
-    title: 'Research Hub',
-    eyebrow: 'Planned knowledge layer',
-    description: 'A legal intelligence workspace for collecting regulatory sources, guidance, enforcement updates, and internal research notes.',
-    points: [
-      'Curated EU AI Act references, guidance, and implementation materials.',
-      'Searchable research summaries organized by risk tier, domain, and obligation.',
-      'Space for future citations, briefings, and policy analysis workflows.',
-    ],
-  },
   timeline: {
     title: 'Timeline',
     eyebrow: 'Implementation view',
@@ -92,7 +83,8 @@ function App() {
 
         {activeSection === 'explorer' && <Explorer />}
         {activeSection === 'risk-engine' && <RiskEngine />}
-        {activeSection !== 'explorer' && activeSection !== 'risk-engine' && (
+        {activeSection === 'research-hub' && <ResearchHub />}
+        {activeSection === 'timeline' && (
           <PlaceholderPage page={PLACEHOLDERS[activeSection]} />
         )}
       </main>
