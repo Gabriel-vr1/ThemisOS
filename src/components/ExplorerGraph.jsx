@@ -3,10 +3,10 @@ import * as d3 from 'd3'
 import data from '../data/eu-ai-act.json'
 
 const TIER_COLORS = {
-  unacceptable: '#8F2435',
-  high: '#B87924',
-  limited: '#2F4F73',
-  minimal: '#2F6B45',
+  unacceptable: '#8F2D3F',
+  high: '#B07A2A',
+  limited: '#355C8A',
+  minimal: '#3F6B4E',
 }
 
 const TIER_LABELS = {
@@ -232,7 +232,7 @@ function ExplorerGraph() {
           return d.type === 'tier' ? 0.9 : 0.7
         })
         .attr('stroke', d => {
-          if (state === 'hover' || state === 'selected') return '#F4E8D0'
+          if (state === 'hover' || state === 'selected') return '#F3E7D0'
           return d.color
         })
         .attr('stroke-width', d => {
@@ -242,7 +242,7 @@ function ExplorerGraph() {
         })
 
       selection.select('rect')
-        .attr('stroke', state === 'hover' || state === 'selected' ? '#C9A45C' : '#3B2A20')
+        .attr('stroke', state === 'hover' || state === 'selected' ? '#C8A96B' : '#4A3727')
         .attr('fill-opacity', state === 'hover' || state === 'selected' ? 1 : 0.92)
     }
 
@@ -359,9 +359,9 @@ function ExplorerGraph() {
       .attr('width', 144)
       .attr('height', 20)
       .attr('rx', 4)
-      .attr('fill', '#1B120E')
+      .attr('fill', '#1E1713')
       .attr('fill-opacity', 0.92)
-      .attr('stroke', '#3B2A20')
+      .attr('stroke', '#4A3727')
       .attr('stroke-opacity', 0.75)
 
     label.append('text')
@@ -371,7 +371,7 @@ function ExplorerGraph() {
       )
       .attr('text-anchor', 'middle')
       .attr('dy', '0.35em')
-      .attr('fill', '#F4E8D0')
+      .attr('fill', '#F3E7D0')
       .attr('font-size', d => d.type === 'tier' ? '11px' : '10px')
       .attr('font-weight', d => d.type === 'tier' ? 700 : 500)
 
@@ -411,7 +411,7 @@ function ExplorerGraph() {
   return (
     <div className="flex flex-col gap-6 xl:flex-row">
       <div className="flex min-w-0 flex-1 flex-col gap-4">
-        <div className="grid gap-3 rounded-lg border border-[#3B2A20] bg-[#1B120E]/70 p-3">
+        <div className="grid gap-3 rounded-lg border border-[#4A3727] bg-[#15110E]/95 p-3 shadow-[inset_0_1px_0_rgba(243,231,208,0.035)]">
           <input
             value={searchQuery}
             onChange={event => {
@@ -420,7 +420,7 @@ function ExplorerGraph() {
               setTooltip(null)
             }}
             placeholder="Search use cases, domains, articles..."
-            className="w-full rounded-md border border-[#3B2A20] bg-[#120D0A] px-3 py-2 text-sm text-[#F4E8D0] outline-none transition-colors placeholder:text-[#A99573] focus:border-[#7A6235]"
+            className="w-full rounded-md border border-[#4A3727] bg-[#0E0B09] px-3 py-2 text-sm text-[#F3E7D0] outline-none transition-colors placeholder:text-[#8B7A65] focus:border-[#7A6038]"
           />
 
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -430,10 +430,10 @@ function ExplorerGraph() {
                 setSelected(null)
                 setTooltip(null)
               }}
-              className="shrink-0 rounded-full border border-[#7A6235] px-3 py-1.5 text-xs transition-all"
+              className="shrink-0 rounded-full border border-[#7A6038] px-3 py-1.5 text-xs transition-all"
               style={{
-                color: activeTier === null ? '#F4E8D0' : '#A99573',
-                background: activeTier === null ? '#3A281E' : 'transparent',
+                color: activeTier === null ? '#F3E7D0' : '#8B7A65',
+                background: activeTier === null ? '#2A201A' : 'transparent',
               }}
             >
               All tiers
@@ -449,7 +449,7 @@ function ExplorerGraph() {
                 className="shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all"
                 style={{
                   borderColor: t.color,
-                  color: activeTier === t.id ? '#F4E8D0' : t.color,
+                  color: activeTier === t.id ? '#F3E7D0' : t.color,
                   background: activeTier === t.id ? t.color : 'transparent',
                 }}
               >
@@ -467,8 +467,8 @@ function ExplorerGraph() {
               }}
               className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                 activeDomain === null
-                  ? 'border-[#7A6235] bg-[#3B2A20] text-[#F4E8D0]'
-                  : 'border-[#3B2A20] text-[#A99573] hover:border-[#7A6235] hover:text-[#D8C7A3]'
+                  ? 'border-[#7A6038] bg-[#4A3727] text-[#F3E7D0]'
+                  : 'border-[#4A3727] text-[#8B7A65] hover:border-[#7A6038] hover:text-[#D0BFA3]'
               }`}
             >
               All domains
@@ -483,8 +483,8 @@ function ExplorerGraph() {
                 }}
                 className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                   activeDomain === domain.id
-                    ? 'border-[#7A6235] bg-[#7A6235]/20 text-[#F4E8D0]'
-                    : 'border-[#3B2A20] text-[#A99573] hover:border-[#7A6235] hover:text-[#D8C7A3]'
+                    ? 'border-[#7A6038] bg-[#7A6038]/20 text-[#F3E7D0]'
+                    : 'border-[#4A3727] text-[#8B7A65] hover:border-[#7A6038] hover:text-[#D0BFA3]'
                 }`}
               >
                 {domain.label}
@@ -492,7 +492,7 @@ function ExplorerGraph() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between gap-3 text-xs text-[#A99573]">
+          <div className="flex items-center justify-between gap-3 text-xs text-[#8B7A65]">
             <span>{filteredUseCases.length} matching use case{filteredUseCases.length === 1 ? '' : 's'}</span>
             {(activeTier || activeDomain || searchQuery) && (
               <button
@@ -503,7 +503,7 @@ function ExplorerGraph() {
                   setSelected(null)
                   setTooltip(null)
                 }}
-                className="text-[#A99573] transition-colors hover:text-[#F4E8D0]"
+                className="text-[#8B7A65] transition-colors hover:text-[#F3E7D0]"
               >
                 Clear filters
               </button>
@@ -511,7 +511,7 @@ function ExplorerGraph() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#A99573]">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#8B7A65]">
           {data.risk_tiers.map(t => (
             <div key={t.id} className="flex items-center gap-2">
               <span
@@ -522,29 +522,29 @@ function ExplorerGraph() {
             </div>
           ))}
         </div>
-        <div ref={graphContainerRef} className="relative rounded-xl border border-[#3B2A20] bg-[#1B120E] overflow-hidden">
+        <div ref={graphContainerRef} className="relative overflow-hidden rounded-xl border border-[#2C3346] bg-[#211A24] shadow-[0_22px_60px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(243,231,208,0.035)]">
           <div className="absolute right-3 top-3 z-10 flex gap-2">
             <button
               onClick={resetView}
               disabled={isEmpty}
-              className="rounded-md border border-[#3B2A20] bg-[#1B120E]/95 px-3 py-1.5 text-xs text-[#D8C7A3] shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-[#C9A45C]/60 hover:bg-[#261812] disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-md border border-[#4A3727] bg-[#15110E]/95 px-3 py-1.5 text-xs text-[#D0BFA3] shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-[#C8A96B]/60 hover:bg-[#2A201A] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Reset View
             </button>
             <button
               onClick={resetLayout}
               disabled={isEmpty}
-              className="rounded-md border border-[#C9A45C]/40 bg-[#261812] px-3 py-1.5 text-xs font-medium text-[#F4E8D0] shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-[#E0C078] hover:bg-[#3B2A20] disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-md border border-[#C8A96B]/45 bg-[#2A201A] px-3 py-1.5 text-xs font-medium text-[#F3E7D0] shadow-[0_12px_30px_rgba(0,0,0,0.28)] transition-colors hover:border-[#E0C98A] hover:bg-[#3A281E] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Reset Layout
             </button>
           </div>
           <svg ref={svgRef} className="w-full" style={{ height: 600 }} />
           {isEmpty && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#2E1D16]/70 px-6 text-center">
-              <div className="max-w-sm rounded-lg border border-[#3B2A20] bg-[#120D0A]/95 p-5 shadow-xl">
-                <p className="text-sm font-semibold text-[#F4E8D0]">No matching use cases</p>
-                <p className="mt-2 text-xs leading-relaxed text-[#A99573]">
+            <div className="absolute inset-0 flex items-center justify-center bg-[#2A201A]/70 px-6 text-center">
+              <div className="max-w-sm rounded-lg border border-[#4A3727] bg-[#15110E]/95 p-5 shadow-xl">
+                <p className="text-sm font-semibold text-[#F3E7D0]">No matching use cases</p>
+                <p className="mt-2 text-xs leading-relaxed text-[#8B7A65]">
                   Try clearing the search, choosing another domain, or switching risk tiers.
                 </p>
               </div>
@@ -552,7 +552,7 @@ function ExplorerGraph() {
           )}
           {tooltip && (
             <div
-              className="pointer-events-none absolute z-20 w-64 rounded-md border border-[#3B2A20] bg-[#120D0A]/95 p-3 text-xs shadow-xl"
+              className="pointer-events-none absolute z-20 w-64 rounded-md border border-[#7A6038]/60 bg-[#15110E]/95 p-3 text-xs shadow-xl"
               style={{
                 left: Math.min(tooltip.x + 14, Math.max(graphWidth - 280, 12)),
                 top: Math.max(tooltip.y - 12, 12),
@@ -563,14 +563,14 @@ function ExplorerGraph() {
                   className="h-2.5 w-2.5 rounded-full"
                   style={{ background: tooltip.color }}
                 />
-                <span className="font-semibold text-[#F4E8D0]">{tooltip.title}</span>
+                <span className="font-semibold text-[#F3E7D0]">{tooltip.title}</span>
               </div>
-              <p className="mb-2 text-[#A99573]">{tooltip.tierLabel}</p>
+              <p className="mb-2 text-[#8B7A65]">{tooltip.tierLabel}</p>
               {tooltip.description && (
-                <p className="line-clamp-3 leading-relaxed text-[#D8C7A3]">{tooltip.description}</p>
+                <p className="line-clamp-3 leading-relaxed text-[#D0BFA3]">{tooltip.description}</p>
               )}
               {tooltip.article && (
-                <p className="mt-2 text-[#C9A45C]">{tooltip.article}</p>
+                <p className="mt-2 text-[#C8A96B]">{tooltip.article}</p>
               )}
             </div>
           )}
@@ -578,10 +578,10 @@ function ExplorerGraph() {
       </div>
 
       {selected && (
-        <div className="flex max-h-none w-full shrink-0 flex-col gap-4 overflow-y-auto rounded-xl border border-[#3B2A20] bg-[#1B120E] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.22)] xl:max-h-[660px] xl:w-80">
+        <div className="flex max-h-none w-full shrink-0 flex-col gap-4 overflow-y-auto rounded-xl border border-[#2C3346] bg-[#211A24] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(243,231,208,0.035)] xl:max-h-[660px] xl:w-80">
           <div className="flex items-start justify-between gap-2">
-            <h2 className="text-sm font-semibold text-[#F4E8D0] leading-snug">{selected.label}</h2>
-            <button onClick={() => setSelected(null)} className="text-[#A99573] hover:text-[#F4E8D0] text-lg leading-none">×</button>
+            <h2 className="text-sm font-semibold text-[#F3E7D0] leading-snug">{selected.label}</h2>
+            <button onClick={() => setSelected(null)} className="text-[#8B7A65] hover:text-[#F3E7D0] text-lg leading-none">×</button>
           </div>
 
           {selected.tierLabel && (
@@ -593,10 +593,10 @@ function ExplorerGraph() {
 
           {selected.nodeType === 'usecase' && selected.domains && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Domains</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Domains</p>
               <div className="flex flex-wrap gap-1.5">
                 {getDomainLabels(selected.domains).map(domain => (
-                  <span key={domain} className="rounded-full border border-[#3B2A20] px-2 py-1 text-xs text-[#D8C7A3]">
+                  <span key={domain} className="rounded-full border border-[#4A3727] px-2 py-1 text-xs text-[#D0BFA3]">
                     {domain}
                   </span>
                 ))}
@@ -605,23 +605,23 @@ function ExplorerGraph() {
           )}
 
           {selected.description && (
-            <p className="text-xs text-[#A99573] leading-relaxed">{selected.description}</p>
+            <p className="text-xs text-[#8B7A65] leading-relaxed">{selected.description}</p>
           )}
 
           {selected.article_reference && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Article Reference</p>
-              <p className="rounded-md border border-[#7A6235]/20 bg-[#7A6235]/10 px-2 py-1.5 text-xs text-[#E0C078]">{selected.article_reference}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Article Reference</p>
+              <p className="rounded-md border border-[#7A6038]/20 bg-[#7A6038]/10 px-2 py-1.5 text-xs text-[#E0C98A]">{selected.article_reference}</p>
             </div>
           )}
 
           {selected.key_obligations && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Key Obligations</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Key Obligations</p>
               <ul className="flex flex-col gap-2">
                 {selected.key_obligations.map((o, i) => (
-                  <li key={i} className="flex gap-2 rounded-md border border-[#3B2A20] bg-[#2E1D16]/75 p-2 text-xs text-[#D8C7A3]">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C9A45C]" />{o}
+                  <li key={i} className="flex gap-2 rounded-md border border-[#4A3727] bg-[#2A201A]/75 p-2 text-xs text-[#D0BFA3]">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C8A96B]" />{o}
                   </li>
                 ))}
               </ul>
@@ -630,11 +630,11 @@ function ExplorerGraph() {
 
           {selected.obligations && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Obligations</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Obligations</p>
               <ul className="flex flex-col gap-2">
                 {selected.obligations.map((o, i) => (
-                  <li key={i} className="flex gap-2 rounded-md border border-[#3B2A20] bg-[#2E1D16]/75 p-2 text-xs text-[#D8C7A3]">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8F2435]" />{o}
+                  <li key={i} className="flex gap-2 rounded-md border border-[#4A3727] bg-[#2A201A]/75 p-2 text-xs text-[#D0BFA3]">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8F2D3F]" />{o}
                   </li>
                 ))}
               </ul>
@@ -643,11 +643,11 @@ function ExplorerGraph() {
 
           {selected.real_world_examples && (
             <div>
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Real World Examples</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Real World Examples</p>
               <ul className="flex flex-col gap-2">
                 {selected.real_world_examples.map((e, i) => (
-                  <li key={i} className="flex gap-2 rounded-md border border-[#3B2A20] bg-[#2E1D16]/75 p-2 text-xs text-[#D8C7A3]">
-                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#A99573]" />{e}
+                  <li key={i} className="flex gap-2 rounded-md border border-[#4A3727] bg-[#2A201A]/75 p-2 text-xs text-[#D0BFA3]">
+                    <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#8B7A65]" />{e}
                   </li>
                 ))}
               </ul>
@@ -656,15 +656,15 @@ function ExplorerGraph() {
 
           {selected.enforcement_date && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Enforcement Date</p>
-              <p className="rounded-md border border-[#2F6B45]/20 bg-[#2F6B45]/10 px-2 py-1.5 text-xs text-[#D8C7A3]">{selected.enforcement_date}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Enforcement Date</p>
+              <p className="rounded-md border border-[#3F6B4E]/20 bg-[#3F6B4E]/10 px-2 py-1.5 text-xs text-[#D0BFA3]">{selected.enforcement_date}</p>
             </div>
           )}
 
           {selected.penalty_max && (
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#A99573]">Maximum Penalty</p>
-              <p className="rounded-md border border-[#8F2435]/20 bg-[#8F2435]/10 px-2 py-1.5 text-xs text-[#D8C7A3]">{selected.penalty_max}</p>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Maximum Penalty</p>
+              <p className="rounded-md border border-[#8F2D3F]/20 bg-[#8F2D3F]/10 px-2 py-1.5 text-xs text-[#D0BFA3]">{selected.penalty_max}</p>
             </div>
           )}
         </div>

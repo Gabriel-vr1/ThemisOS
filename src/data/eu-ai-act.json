@@ -14,7 +14,7 @@
       "id": "unacceptable",
       "label": "Unacceptable Risk",
       "description": "AI practices that pose a clear threat to fundamental rights, safety, or democratic values. These are outright prohibited under the EU AI Act.",
-      "color": "#8F2435",
+      "color": "#8F2D3F",
       "enforcement_date": "2025-02-02",
       "penalty_max": "€35,000,000 or 7% of global annual turnover",
       "article_reference": "Article 5"
@@ -23,7 +23,7 @@
       "id": "high",
       "label": "High Risk",
       "description": "AI systems that pose significant risks to health, safety, or fundamental rights. Permitted but subject to strict obligations before market placement.",
-      "color": "#B87924",
+      "color": "#B07A2A",
       "enforcement_date": "2026-08-02",
       "penalty_max": "€15,000,000 or 3% of global annual turnover",
       "article_reference": "Articles 6–49, Annex III"
@@ -32,7 +32,7 @@
       "id": "limited",
       "label": "Limited Risk",
       "description": "AI systems with specific transparency obligations. Users must be informed they are interacting with AI.",
-      "color": "#2F4F73",
+      "color": "#355C8A",
       "enforcement_date": "2026-08-02",
       "penalty_max": "€7,500,000 or 1.5% of global annual turnover",
       "article_reference": "Articles 50–52"
@@ -41,7 +41,7 @@
       "id": "minimal",
       "label": "Minimal Risk",
       "description": "AI systems with little to no risk to rights or safety. No mandatory obligations under the Act, though voluntary codes of conduct are encouraged.",
-      "color": "#2F6B45",
+      "color": "#3F6B4E",
       "enforcement_date": "N/A — No mandatory compliance obligations",
       "penalty_max": "None (voluntary codes of conduct encouraged)",
       "article_reference": "Article 95"

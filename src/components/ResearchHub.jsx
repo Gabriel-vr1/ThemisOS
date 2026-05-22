@@ -141,11 +141,11 @@ function ResearchHub() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="rounded-xl border border-[#3B2A20] bg-[#1B120E] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+      <section className="rounded-xl border border-[#4A3727] bg-[#1E1713] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(243,231,208,0.035)]">
         <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[#C9A45C]">Research Hub</p>
-          <h1 className="mt-2 text-2xl font-semibold text-[#F4E8D0]">AI governance knowledge base</h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#A99573]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[#C8A96B]">Research Hub</p>
+          <h1 className="mt-2 text-2xl font-semibold text-[#F3E7D0]">AI governance knowledge base</h1>
+          <p className="mt-2 text-sm leading-relaxed text-[#8B7A65]">
             A compact study workspace for EU AI Act concepts, risk classification, legal terms, and governance obligations.
           </p>
         </div>
@@ -155,7 +155,7 @@ function ResearchHub() {
             value={query}
             onChange={event => setQuery(event.target.value)}
             placeholder="Search concepts, terms, articles, obligations..."
-            className="w-full rounded-md border border-[#3B2A20] bg-[#120D0A] px-3 py-2 text-sm text-[#F4E8D0] outline-none transition-colors placeholder:text-[#A99573] focus:border-[#7A6235]"
+            className="w-full rounded-md border border-[#4A3727] bg-[#15110E] px-3 py-2 text-sm text-[#F3E7D0] outline-none transition-colors placeholder:text-[#8B7A65] focus:border-[#7A6038]"
           />
 
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -163,8 +163,8 @@ function ResearchHub() {
               onClick={() => setActiveSection('all')}
               className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                 activeSection === 'all'
-                  ? 'border-[#7A6235] bg-[#3B2A20] text-[#F4E8D0]'
-                  : 'border-[#3B2A20] text-[#A99573] hover:border-[#7A6235] hover:text-[#D8C7A3]'
+                  ? 'border-[#7A6038] bg-[#4A3727] text-[#F3E7D0]'
+                  : 'border-[#4A3727] text-[#8B7A65] hover:border-[#7A6038] hover:text-[#D0BFA3]'
               }`}
             >
               All topics
@@ -175,8 +175,8 @@ function ResearchHub() {
                 onClick={() => setActiveSection(section.id)}
                 className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                   activeSection === section.id
-                    ? 'border-[#7A6235] bg-[#7A6235]/20 text-[#F4E8D0]'
-                    : 'border-[#3B2A20] text-[#A99573] hover:border-[#7A6235] hover:text-[#D8C7A3]'
+                    ? 'border-[#7A6038] bg-[#7A6038]/20 text-[#F3E7D0]'
+                    : 'border-[#4A3727] text-[#8B7A65] hover:border-[#7A6038] hover:text-[#D0BFA3]'
                 }`}
               >
                 {section.label}
@@ -184,7 +184,7 @@ function ResearchHub() {
             ))}
           </div>
 
-          <div className="flex items-center justify-between gap-3 text-xs text-[#A99573]">
+          <div className="flex items-center justify-between gap-3 text-xs text-[#8B7A65]">
             <span>{resultCount} knowledge item{resultCount === 1 ? '' : 's'}</span>
             {(query || activeSection !== 'all') && (
               <button
@@ -192,7 +192,7 @@ function ResearchHub() {
                   setQuery('')
                   setActiveSection('all')
                 }}
-                className="text-[#A99573] transition-colors hover:text-[#F4E8D0]"
+                className="text-[#8B7A65] transition-colors hover:text-[#F3E7D0]"
               >
                 Clear filters
               </button>
@@ -203,22 +203,22 @@ function ResearchHub() {
 
       {filteredSections.length > 0 ? (
         filteredSections.map(section => (
-          <section key={section.id} className="rounded-xl border border-[#3B2A20] bg-[#1B120E] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#A99573]">{section.label}</h2>
+          <section key={section.id} className="rounded-xl border border-[#4A3727] bg-[#1E1713] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(243,231,208,0.035)]">
+            <h2 className="text-sm font-semibold uppercase tracking-wider text-[#8B7A65]">{section.label}</h2>
             <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {section.items.map(item => (
-                <article key={`${section.id}-${item.title}`} className="rounded-lg border border-[#3B2A20] bg-[#2E1D16]/75 p-4 shadow-[inset_0_1px_0_rgba(243,240,232,0.035)]">
+                <article key={`${section.id}-${item.title}`} className="rounded-lg border border-[#4A3727] bg-[#2A201A]/75 p-4 shadow-[inset_0_1px_0_rgba(243,231,208,0.035)]">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-sm font-semibold text-[#F4E8D0]">{item.title}</h3>
+                    <h3 className="text-sm font-semibold text-[#F3E7D0]">{item.title}</h3>
                     {item.color && (
                       <span className="mt-1 h-3 w-3 shrink-0 rounded-full" style={{ background: item.color }} />
                     )}
                   </div>
-                  {item.meta && <p className="mt-2 text-xs text-[#E0C078]">{item.meta}</p>}
-                  <p className="mt-3 text-sm leading-relaxed text-[#A99573]">{item.body}</p>
+                  {item.meta && <p className="mt-2 text-xs text-[#E0C98A]">{item.meta}</p>}
+                  <p className="mt-3 text-sm leading-relaxed text-[#8B7A65]">{item.body}</p>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {item.tags.map(tag => (
-                      <span key={tag} className="rounded-full border border-[#3B2A20] px-2 py-1 text-xs text-[#A99573]">
+                      <span key={tag} className="rounded-full border border-[#4A3727] px-2 py-1 text-xs text-[#8B7A65]">
                         {tag}
                       </span>
                     ))}
@@ -229,9 +229,9 @@ function ResearchHub() {
           </section>
         ))
       ) : (
-        <section className="rounded-xl border border-[#3B2A20] bg-[#1B120E] p-8 shadow-[0_18px_50px_rgba(0,0,0,0.22)] text-center">
-          <p className="text-sm font-semibold text-[#F4E8D0]">No research notes found</p>
-          <p className="mt-2 text-xs text-[#A99573]">Try another search term or clear the topic filter.</p>
+        <section className="rounded-xl border border-[#4A3727] bg-[#1E1713] p-8 shadow-[0_22px_60px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(243,231,208,0.035)] text-center">
+          <p className="text-sm font-semibold text-[#F3E7D0]">No research notes found</p>
+          <p className="mt-2 text-xs text-[#8B7A65]">Try another search term or clear the topic filter.</p>
         </section>
       )}
     </div>
