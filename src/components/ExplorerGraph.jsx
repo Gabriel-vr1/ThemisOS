@@ -17,9 +17,50 @@ const TIER_LABELS = {
 }
 
 const LABEL_LIMIT = 28
+const TIER_ORDER = ['unacceptable', 'high', 'limited', 'minimal']
 
 function truncateLabel(label) {
   return label.length > LABEL_LIMIT ? `${label.slice(0, LABEL_LIMIT - 1)}...` : label
+}
+
+function getTierAnchors(tiers, width, height) {
+  const paddingX = Math.max(130, width * 0.16)
+  const paddingY = 125
+  const centerX = width / 2
+  const centerY = height / 2
+  const orderedTiers = [...tiers].sort((a, b) => TIER_ORDER.indexOf(a.id) - TIER_ORDER.indexOf(b.id))
+
+  if (orderedTiers.length === 1) {
+    return {
+      [orderedTiers[0].id]: { x: centerX, y: centerY },
+    }
+  }
+
+  const positions = [
+    { x: paddingX, y: paddingY },
+    { x: width - paddingX, y: paddingY },
+    { x: paddingX, y: height - paddingY },
+    { x: width - paddingX, y: height - paddingY },
+  ]
+
+  return orderedTiers.reduce((anchors, tier, index) => {
+    anchors[tier.id] = positions[index] || { x: centerX, y: centerY }
+    return anchors
+  }, {})
+}
+
+function getSeedPosition(anchor, index, total, radius) {
+  const angle = ((Math.PI * 2) / Math.max(total, 1)) * index - Math.PI / 2
+  const ring = radius + (index % 3) * 18
+
+  return {
+    x: anchor.x + Math.cos(angle) * ring,
+    y: anchor.y + Math.sin(angle) * ring,
+  }
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value))
 }
 
 function ExplorerGraph() {
@@ -93,6 +134,13 @@ function ExplorerGraph() {
       ? data.use_cases.filter(u => u.tier === activeTier)
       : data.use_cases
 
+    const tierAnchors = getTierAnchors(visibleTiers, width, height)
+    const tierUseCaseCounts = visibleUseCases.reduce((counts, useCase) => {
+      counts[useCase.tier] = (counts[useCase.tier] || 0) + 1
+      return counts
+    }, {})
+    const tierUseCaseIndexes = {}
+
     const nodes = [
       ...visibleTiers.map(t => ({
         id: t.id,
@@ -101,17 +149,33 @@ function ExplorerGraph() {
         color: t.color,
         tier: t.id,
         tierLabel: t.label,
+        x: tierAnchors[t.id].x,
+        y: tierAnchors[t.id].y,
         data: t,
       })),
-      ...visibleUseCases.map(u => ({
-        id: u.id,
-        label: u.short_label,
-        type: 'usecase',
-        tier: u.tier,
-        color: TIER_COLORS[u.tier],
-        tierLabel: TIER_LABELS[u.tier],
-        data: u,
-      })),
+      ...visibleUseCases.map(u => {
+        const tierIndex = tierUseCaseIndexes[u.tier] || 0
+        const seed = getSeedPosition(
+          tierAnchors[u.tier],
+          tierIndex,
+          tierUseCaseCounts[u.tier],
+          activeTier ? 115 : 88
+        )
+
+        tierUseCaseIndexes[u.tier] = tierIndex + 1
+
+        return {
+          id: u.id,
+          label: u.short_label,
+          type: 'usecase',
+          tier: u.tier,
+          color: TIER_COLORS[u.tier],
+          tierLabel: TIER_LABELS[u.tier],
+          x: Math.max(80, Math.min(width - 80, seed.x)),
+          y: Math.max(80, Math.min(height - 80, seed.y)),
+          data: u,
+        }
+      }),
     ]
 
     const links = visibleUseCases.map(u => ({
@@ -148,10 +212,15 @@ function ExplorerGraph() {
     }
 
     const simulation = d3.forceSimulation(nodes)
-      .force('link', d3.forceLink(links).id(d => d.id).distance(120))
-      .force('charge', d3.forceManyBody().strength(-300))
+      .alpha(0.9)
+      .alphaDecay(0.035)
+      .velocityDecay(0.42)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(activeTier ? 125 : 95).strength(0.55))
+      .force('charge', d3.forceManyBody().strength(d => d.type === 'tier' ? -700 : -135))
       .force('center', d3.forceCenter(width / 2, height / 2))
-      .force('collision', d3.forceCollide().radius(50))
+      .force('clusterX', d3.forceX(d => tierAnchors[d.tier]?.x || width / 2).strength(d => d.type === 'tier' ? 0.34 : 0.12))
+      .force('clusterY', d3.forceY(d => tierAnchors[d.tier]?.y || height / 2).strength(d => d.type === 'tier' ? 0.34 : 0.12))
+      .force('collision', d3.forceCollide().radius(d => d.type === 'tier' ? 72 : 56).strength(0.9))
 
     const link = graphLayer.append('g')
       .selectAll('line')
@@ -263,6 +332,11 @@ function ExplorerGraph() {
     resetNodeStates()
 
     simulation.on('tick', () => {
+      nodes.forEach(d => {
+        d.x = clamp(d.x, 75, width - 75)
+        d.y = clamp(d.y, 65, height - 70)
+      })
+
       link
         .attr('x1', d => d.source.x)
         .attr('y1', d => d.source.y)
