@@ -1,0 +1,506 @@
+{
+  "metadata": {
+    "framework": "European Union Artificial Intelligence Act",
+    "regulation": "Regulation (EU) 2024/1689",
+    "adopted": "2024-05-21",
+    "entered_into_force": "2024-08-01",
+    "version": "1.0",
+    "last_updated": "2025-05",
+    "notes": "Risk classifications and article references are based on the final published text of the EU AI Act. Enforcement dates reflect the phased implementation schedule."
+  },
+
+  "risk_tiers": [
+    {
+      "id": "unacceptable",
+      "label": "Unacceptable Risk",
+      "description": "AI practices that pose a clear threat to fundamental rights, safety, or democratic values. These are outright prohibited under the EU AI Act.",
+      "color": "#A32D2D",
+      "enforcement_date": "2025-02-02",
+      "penalty_max": "€35,000,000 or 7% of global annual turnover",
+      "article_reference": "Article 5"
+    },
+    {
+      "id": "high",
+      "label": "High Risk",
+      "description": "AI systems that pose significant risks to health, safety, or fundamental rights. Permitted but subject to strict obligations before market placement.",
+      "color": "#BA7517",
+      "enforcement_date": "2026-08-02",
+      "penalty_max": "€15,000,000 or 3% of global annual turnover",
+      "article_reference": "Articles 6–49, Annex III"
+    },
+    {
+      "id": "limited",
+      "label": "Limited Risk",
+      "description": "AI systems with specific transparency obligations. Users must be informed they are interacting with AI.",
+      "color": "#185FA5",
+      "enforcement_date": "2026-08-02",
+      "penalty_max": "€7,500,000 or 1.5% of global annual turnover",
+      "article_reference": "Articles 50–52"
+    },
+    {
+      "id": "minimal",
+      "label": "Minimal Risk",
+      "description": "AI systems with little to no risk to rights or safety. No mandatory obligations under the Act, though voluntary codes of conduct are encouraged.",
+      "color": "#3B6D11",
+      "enforcement_date": "N/A — No mandatory compliance obligations",
+      "penalty_max": "None (voluntary codes of conduct encouraged)",
+      "article_reference": "Article 95"
+    }
+  ],
+
+  "domains": [
+    { "id": "biometrics", "label": "Biometrics & Surveillance" },
+    { "id": "employment", "label": "Employment & HR" },
+    { "id": "education", "label": "Education & Training" },
+    { "id": "healthcare", "label": "Healthcare & Medicine" },
+    { "id": "justice", "label": "Justice & Law Enforcement" },
+    { "id": "finance", "label": "Finance & Credit" },
+    { "id": "infrastructure", "label": "Critical Infrastructure" },
+    { "id": "government", "label": "Government & Public Services" },
+    { "id": "consumer", "label": "Consumer & Entertainment" },
+    { "id": "productivity", "label": "Productivity & Business Tools" }
+  ],
+
+  "use_cases": [
+    {
+      "id": "uc_001",
+      "label": "Real-Time Remote Biometric Identification in Public Spaces",
+      "short_label": "Live facial recognition (public)",
+      "tier": "unacceptable",
+      "domains": ["biometrics", "justice"],
+      "description": "AI systems that identify individuals in real time using biometric data (e.g. facial recognition) in publicly accessible spaces. Prohibited with narrow exceptions for law enforcement (missing persons, terrorist threats) subject to prior judicial or independent authorisation.",
+      "real_world_examples": [
+        "Live CCTV facial recognition in train stations or city centres",
+        "Automated crowd identification at public events"
+      ],
+      "prohibited_reason": "Constitutes mass surveillance incompatible with EU fundamental rights principles.",
+      "article_reference": "Article 5(1)(h)",
+      "obligations": ["Prohibited — no compliance pathway for general commercial use"],
+      "exceptions": [
+        "Targeted searches for missing persons",
+        "Prevention of imminent terrorist threats",
+        "Prosecution of serious criminal offences — requires prior judicial authorisation"
+      ],
+      "enforcement_date": "2025-02-02"
+    },
+    {
+      "id": "uc_002",
+      "label": "Social Scoring by Public Authorities",
+      "short_label": "Government social scoring",
+      "tier": "unacceptable",
+      "domains": ["government", "justice"],
+      "description": "AI systems used by public authorities to evaluate and score individuals based on social behaviour or personal characteristics, leading to detrimental treatment in unrelated contexts.",
+      "real_world_examples": [
+        "Social credit scoring systems used to restrict travel or public services",
+        "Aggregated citizen behavioural scoring systems"
+      ],
+      "prohibited_reason": "Undermines human dignity, equality, and the rule of law.",
+      "article_reference": "Article 5(1)(c)",
+      "obligations": ["Prohibited"],
+      "exceptions": [],
+      "enforcement_date": "2025-02-02"
+    },
+    {
+      "id": "uc_003",
+      "label": "Subliminal Manipulation Techniques",
+      "short_label": "Subliminal manipulation AI",
+      "tier": "unacceptable",
+      "domains": ["consumer", "government"],
+      "description": "AI systems that deploy subliminal, manipulative, or deceptive techniques to distort a person's behaviour in ways that impair their ability to make free and informed decisions, causing harm.",
+      "real_world_examples": [
+        "AI systems exploiting psychological vulnerabilities to drive compulsive purchasing",
+        "Micro-targeted political disinformation designed to exploit cognitive biases"
+      ],
+      "prohibited_reason": "Undermines individual autonomy and informed decision-making.",
+      "article_reference": "Article 5(1)(a)(b)",
+      "obligations": ["Prohibited"],
+      "exceptions": [],
+      "enforcement_date": "2025-02-02"
+    },
+    {
+      "id": "uc_004",
+      "label": "AI-Based Emotion Recognition in Workplaces and Schools",
+      "short_label": "Emotion recognition (workplaces / schools)",
+      "tier": "unacceptable",
+      "domains": ["employment", "education"],
+      "description": "AI systems that infer or classify emotions of natural persons in workplace or educational settings through biometric data such as facial expressions, voice, or physiological signals.",
+      "real_world_examples": [
+        "Automated employee mood monitoring via camera feeds",
+        "Student attention and engagement scoring via facial recognition in classrooms"
+      ],
+      "prohibited_reason": "Infringes on dignity and privacy in coercive settings where consent is structurally compromised.",
+      "article_reference": "Article 5(1)(f)",
+      "obligations": ["Prohibited"],
+      "exceptions": ["Medical or safety purposes (e.g. detecting drowsiness in vehicle operators)"],
+      "enforcement_date": "2025-02-02"
+    },
+    {
+      "id": "uc_005",
+      "label": "AI for Predictive Policing Based on Profiling",
+      "short_label": "Predictive crime profiling",
+      "tier": "unacceptable",
+      "domains": ["justice", "biometrics"],
+      "description": "AI systems used by law enforcement to predict criminal activity based solely on profiling of individuals or groups, without objective evidence or factual basis for suspicion.",
+      "real_world_examples": [
+        "Risk-scoring software predicting criminal recidivism based on demographic data",
+        "Individual pre-crime prediction models used to pre-emptively detain or target suspects"
+      ],
+      "prohibited_reason": "Violates presumption of innocence and risks systematic discrimination.",
+      "article_reference": "Article 5(1)(d)",
+      "obligations": ["Prohibited for individual prediction — area-based risk assessment is separately evaluated"],
+      "exceptions": [],
+      "enforcement_date": "2025-02-02"
+    },
+    {
+      "id": "uc_006",
+      "label": "AI-Assisted Medical Diagnosis and Triage",
+      "short_label": "AI medical diagnosis",
+      "tier": "high",
+      "domains": ["healthcare"],
+      "description": "AI systems used to support clinical decision-making, including diagnosis of disease, imaging interpretation, treatment recommendations, and patient triage. Classified as high-risk due to direct impact on patient health and safety.",
+      "real_world_examples": [
+        "AI analysing MRI scans for tumour detection",
+        "Automated sepsis early-warning systems in hospitals",
+        "AI triage tools in emergency departments"
+      ],
+      "article_reference": "Annex III, Point 5(a); Articles 9–15",
+      "key_obligations": [
+        "Mandatory risk management system (Article 9)",
+        "High-quality training, validation, and test data (Article 10)",
+        "Comprehensive technical documentation (Article 11)",
+        "Logging and traceability of operations (Article 12)",
+        "Human oversight mechanisms (Article 14)",
+        "Conformity assessment before deployment (Article 43)"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_007",
+      "label": "Automated CV Screening and Recruitment Tools",
+      "short_label": "AI CV screening / recruitment",
+      "tier": "high",
+      "domains": ["employment"],
+      "description": "AI systems used to filter, rank, or score job applicants, including tools that analyse CVs, video interviews, or psychometric tests to determine candidate suitability.",
+      "real_world_examples": [
+        "Automated applicant tracking systems with AI-driven shortlisting",
+        "AI video interview analysis scoring candidates on speech patterns or facial expressions",
+        "Résumé ranking tools trained on historical hiring decisions"
+      ],
+      "article_reference": "Annex III, Point 4(a); Articles 9–15",
+      "key_obligations": [
+        "Risk management system",
+        "Data governance and bias mitigation",
+        "Transparency to affected individuals",
+        "Human review of AI decisions",
+        "Right to explanation and redress"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_008",
+      "label": "AI in Creditworthiness Assessment",
+      "short_label": "AI credit scoring",
+      "tier": "high",
+      "domains": ["finance"],
+      "description": "AI systems used by financial institutions to evaluate the creditworthiness of individuals, determine credit limits, or assess repayment risk — with direct impact on access to financial services.",
+      "real_world_examples": [
+        "Machine learning models used by banks to approve or reject loan applications",
+        "AI-driven mortgage eligibility scoring",
+        "Buy-now-pay-later platform credit risk models"
+      ],
+      "article_reference": "Annex III, Point 5(b); Articles 9–15",
+      "key_obligations": [
+        "Risk management and data quality standards",
+        "Transparency obligations to affected individuals",
+        "Logging of system outputs",
+        "Human oversight of consequential decisions"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_009",
+      "label": "AI Systems in Criminal Justice (Sentencing and Risk Assessment)",
+      "short_label": "AI criminal justice tools",
+      "tier": "high",
+      "domains": ["justice"],
+      "description": "AI systems used to assist or inform judicial decisions including recidivism risk scoring, bail assessments, sentencing recommendations, and case prioritisation.",
+      "real_world_examples": [
+        "Recidivism prediction tools used in pre-trial or sentencing hearings",
+        "Automated bail decision support systems",
+        "AI case outcome prediction for prosecutors or defence teams"
+      ],
+      "article_reference": "Annex III, Point 8; Articles 9–15",
+      "key_obligations": [
+        "Strict human oversight — AI is advisory only",
+        "Explainability of outputs",
+        "Technical documentation and logging",
+        "Bias testing and fairness audits"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_010",
+      "label": "AI in Educational Assessment and Monitoring",
+      "short_label": "AI educational assessment",
+      "tier": "high",
+      "domains": ["education"],
+      "description": "AI systems that assess learning outcomes, determine access to educational institutions, or monitor student performance in ways that influence educational trajectories.",
+      "real_world_examples": [
+        "Automated essay grading systems used in university admissions",
+        "AI-based standardised test proctoring with behavioural monitoring",
+        "Adaptive learning platforms that gatekeep curriculum access based on performance"
+      ],
+      "article_reference": "Annex III, Point 3; Articles 9–15",
+      "key_obligations": [
+        "Risk management system",
+        "Data quality and representativeness",
+        "Human review of access decisions",
+        "Transparency to students and parents"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_011",
+      "label": "AI in Critical Infrastructure Management",
+      "short_label": "AI for power / water / transport infrastructure",
+      "tier": "high",
+      "domains": ["infrastructure"],
+      "description": "AI systems that manage or make decisions in the operation of critical infrastructure including electricity grids, water systems, transport networks, and digital infrastructure.",
+      "real_world_examples": [
+        "AI managing load balancing on national electricity grids",
+        "Automated fault detection systems for water distribution networks",
+        "AI-controlled rail switching systems"
+      ],
+      "article_reference": "Annex III, Point 2; Articles 9–15",
+      "key_obligations": [
+        "Robust risk management",
+        "Continuous monitoring and logging",
+        "Fail-safe mechanisms and human override",
+        "Cybersecurity requirements"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_012",
+      "label": "AI-Powered Chatbots and Virtual Assistants",
+      "short_label": "Consumer chatbots",
+      "tier": "limited",
+      "domains": ["consumer", "productivity"],
+      "description": "AI systems deployed as conversational agents — including customer service bots, virtual assistants, and AI companions — where users may not immediately recognise they are interacting with an AI system.",
+      "real_world_examples": [
+        "Customer service chatbots on e-commerce platforms",
+        "AI virtual assistants integrated into banking apps",
+        "General-purpose consumer chatbots"
+      ],
+      "article_reference": "Article 50(1)",
+      "key_obligations": [
+        "Mandatory disclosure that the user is interacting with an AI",
+        "Exception applies when context makes it obvious (e.g. clearly labelled entertainment bots)"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": ["Context makes AI nature obvious to a reasonably informed user"]
+    },
+    {
+      "id": "uc_013",
+      "label": "AI-Generated Deepfakes and Synthetic Media",
+      "short_label": "Deepfakes and synthetic media",
+      "tier": "limited",
+      "domains": ["consumer", "government"],
+      "description": "AI systems that generate or manipulate audio, image, or video content (deepfakes) that depicts real persons, places, or events in a way that could mislead the public.",
+      "real_world_examples": [
+        "AI-generated video of public figures saying things they did not say",
+        "Synthetic news footage created without disclosure",
+        "AI face-swap tools used in online content"
+      ],
+      "article_reference": "Article 50(4)",
+      "key_obligations": [
+        "Machine-readable disclosure that content is AI-generated",
+        "Human-perceivable disclosure in consumer-facing contexts",
+        "Exception for clearly artistic or satirical content with appropriate labelling"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": ["Clearly artistic, creative, or satirical work with disclosure"]
+    },
+    {
+      "id": "uc_014",
+      "label": "General-Purpose AI Systems (GPAIs) and Foundation Models",
+      "short_label": "Foundation models (GPT, Claude, Gemini-type)",
+      "tier": "limited",
+      "domains": ["productivity", "consumer"],
+      "description": "Large-scale AI models trained on broad data and deployed across a wide range of tasks and applications. Subject to specific transparency and documentation obligations under the EU AI Act, with additional obligations for systemic-risk models.",
+      "real_world_examples": [
+        "Large language models such as GPT-4, Claude, and Gemini",
+        "Multimodal foundation models",
+        "Open-source models above the 10^25 FLOP training threshold"
+      ],
+      "article_reference": "Articles 51–55",
+      "key_obligations": [
+        "Technical documentation of model capabilities and limitations",
+        "Copyright and training data transparency",
+        "Downstream deployer information requirements",
+        "Additional obligations for systemic-risk models (Article 55): adversarial testing, incident reporting, cybersecurity measures"
+      ],
+      "enforcement_date": "2025-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_015",
+      "label": "AI Spam Filters and Content Moderation",
+      "short_label": "Spam filters / content moderation",
+      "tier": "minimal",
+      "domains": ["productivity", "consumer"],
+      "description": "AI systems used to detect and filter spam, classify content, or moderate user-generated material on digital platforms. Pose minimal risk under the EU AI Act.",
+      "real_world_examples": [
+        "Email spam detection models",
+        "Social media automated content policy enforcement",
+        "Comment toxicity classifiers"
+      ],
+      "article_reference": "Recital 97; no specific mandatory article",
+      "key_obligations": [
+        "No mandatory obligations under the Act",
+        "Voluntary adherence to AI codes of conduct encouraged"
+      ],
+      "enforcement_date": "N/A",
+      "exceptions": []
+    },
+    {
+      "id": "uc_016",
+      "label": "AI in Video Games and Entertainment Recommendation",
+      "short_label": "AI in video games / recommendation",
+      "tier": "minimal",
+      "domains": ["consumer"],
+      "description": "AI systems used to generate game content, control non-player characters, or personalise entertainment recommendations on streaming platforms. Generally pose minimal risk.",
+      "real_world_examples": [
+        "Procedural content generation in video games",
+        "AI-controlled NPCs with adaptive behaviour",
+        "Streaming platform recommendation engines (film, music, podcasts)"
+      ],
+      "article_reference": "Recital 97",
+      "key_obligations": [
+        "No mandatory obligations under the Act",
+        "General consumer protection and data protection laws still apply"
+      ],
+      "enforcement_date": "N/A",
+      "exceptions": []
+    },
+    {
+      "id": "uc_017",
+      "label": "AI Writing and Productivity Assistants",
+      "short_label": "AI writing / productivity tools",
+      "tier": "minimal",
+      "domains": ["productivity"],
+      "description": "AI-powered tools that assist with writing, summarisation, translation, code completion, or task management in professional and consumer contexts.",
+      "real_world_examples": [
+        "AI grammar and writing assistants",
+        "Code autocompletion tools",
+        "AI document summarisation tools",
+        "AI translation software"
+      ],
+      "article_reference": "Recital 97",
+      "key_obligations": [
+        "No mandatory obligations under the Act",
+        "May be subject to transparency obligations if embedded in a chatbot interface (Article 50)"
+      ],
+      "enforcement_date": "N/A",
+      "exceptions": []
+    },
+    {
+      "id": "uc_018",
+      "label": "AI-Driven Border Control and Visa Assessment",
+      "short_label": "AI border / visa assessment",
+      "tier": "high",
+      "domains": ["government", "biometrics"],
+      "description": "AI systems used by border authorities to assess migration and asylum applications, verify identities at borders, or classify traveller risk profiles.",
+      "real_world_examples": [
+        "Automated lie-detection tools used at border crossings",
+        "AI risk-scoring of visa applications",
+        "Biometric identity verification at automated passport gates"
+      ],
+      "article_reference": "Annex III, Point 7; Articles 9–15",
+      "key_obligations": [
+        "Mandatory human oversight of all consequential decisions",
+        "Transparency to affected individuals",
+        "Bias testing across demographic groups",
+        "Technical documentation and conformity assessment"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_019",
+      "label": "AI Robotic Surgery and Autonomous Medical Devices",
+      "short_label": "AI surgical robotics",
+      "tier": "high",
+      "domains": ["healthcare"],
+      "description": "AI-driven robotic systems that assist or autonomously perform surgical procedures, or AI embedded in medical devices that influence diagnosis or treatment without constant human input.",
+      "real_world_examples": [
+        "AI-assisted laparoscopic surgical robots",
+        "Autonomous insulin delivery systems",
+        "AI-guided radiotherapy dose planning"
+      ],
+      "article_reference": "Annex III, Point 5; Articles 9–15",
+      "key_obligations": [
+        "Conformity assessment under existing medical device regulation and EU AI Act",
+        "Extensive validation and clinical trials data",
+        "Human override capability at all stages",
+        "Comprehensive logging for post-market surveillance"
+      ],
+      "enforcement_date": "2026-08-02",
+      "exceptions": []
+    },
+    {
+      "id": "uc_020",
+      "label": "AI Personalised Advertising and Behavioural Targeting",
+      "short_label": "AI behavioural advertising",
+      "tier": "minimal",
+      "domains": ["consumer"],
+      "description": "AI systems that analyse user behaviour, preferences, and demographic signals to deliver personalised advertising. Governed primarily by existing GDPR and Digital Services Act obligations rather than specific EU AI Act requirements.",
+      "real_world_examples": [
+        "Programmatic advertising platforms with AI bidding and targeting",
+        "Social media ad personalisation engines",
+        "Retargeting systems based on browsing history"
+      ],
+      "article_reference": "Recital 97 (outside scope of high-risk categories)",
+      "key_obligations": [
+        "No specific obligations under the EU AI Act",
+        "Subject to GDPR, Digital Services Act, and Digital Markets Act"
+      ],
+      "enforcement_date": "N/A",
+      "exceptions": []
+    }
+  ],
+
+  "implementation_timeline": [
+    {
+      "date": "2024-08-01",
+      "label": "Act enters into force",
+      "description": "The EU AI Act officially enters into force across all EU member states."
+    },
+    {
+      "date": "2025-02-02",
+      "label": "Prohibited practices ban",
+      "description": "Prohibitions on unacceptable-risk AI practices become enforceable (Article 5). Six months after entry into force."
+    },
+    {
+      "date": "2025-08-02",
+      "label": "GPAI model obligations",
+      "description": "Obligations for providers of general-purpose AI models (foundation models) apply. Twelve months after entry into force."
+    },
+    {
+      "date": "2026-08-02",
+      "label": "High-risk obligations",
+      "description": "Full obligations for high-risk AI systems (Annex III) and limited-risk transparency obligations come into effect. Twenty-four months after entry into force."
+    },
+    {
+      "date": "2027-08-02",
+      "label": "High-risk embedded systems",
+      "description": "Obligations for high-risk AI systems embedded in regulated products (Annex I — medical devices, machinery, aviation, etc.) become enforceable. Thirty-six months after entry into force."
+    }
+  ]
+}
