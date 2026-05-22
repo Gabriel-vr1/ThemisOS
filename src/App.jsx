@@ -16,15 +16,15 @@ function App() {
   const activeLabel = NAV_ITEMS.find(item => item.id === activeSection)?.label
 
   return (
-    <div className="min-h-screen bg-[#0E0B09] text-[#F3E7D0]">
-      <header className="border-b border-[#4A3727] bg-[#15110E] px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.24),inset_0_-1px_0_rgba(200,169,107,0.14)] sm:px-8">
+    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)]">
+      <header className="border-b border-[var(--border-standard)] bg-[var(--bg-secondary)] px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.24),inset_0_-1px_0_rgba(200,169,107,0.14)] sm:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md border border-[#C8A96B]/35 bg-[#2A201A] text-sm font-semibold text-[#C8A96B] shadow-[inset_0_1px_0_rgba(243,231,208,0.07)]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--accent-gold)]/35 bg-[var(--bg-raised)] text-sm font-semibold text-[var(--accent-gold)] shadow-[inset_0_1px_0_rgba(243,231,208,0.07)]">
               T
             </span>
-            <span className="text-lg font-semibold tracking-tight text-[#F3E7D0]">ThemisOS</span>
-            <span className="mt-0.5 border-l border-[#4A3727] pl-3 text-xs text-[#8B7A65]">AI Governance Intelligence</span>
+            <span className="font-serif text-lg font-semibold tracking-tight text-[var(--accent-brass)]">ThemisOS</span>
+            <span className="mt-0.5 border-l border-[var(--border-standard)] pl-3 text-xs text-[var(--text-muted)]">AI Governance Intelligence</span>
           </div>
 
           <nav aria-label="Primary navigation" className="flex gap-2 overflow-x-auto pb-1 lg:pb-0">
@@ -34,8 +34,8 @@ function App() {
                 onClick={() => setActiveSection(item.id)}
                 className={`shrink-0 rounded-md border px-3 py-2 text-sm transition-colors ${
                   activeSection === item.id
-                    ? 'border-[#C8A96B]/55 bg-[#2A201A] text-[#F3E7D0] shadow-[inset_0_1px_0_rgba(224,201,138,0.14)]'
-                    : 'border-[#4A3727] bg-[#15110E] text-[#8B7A65] hover:border-[#7A6038] hover:bg-[#1E1713] hover:text-[#F3E7D0]'
+                    ? 'border-[var(--accent-gold)]/55 bg-[var(--accent-navy)] text-[var(--accent-brass)] shadow-[inset_0_1px_0_rgba(224,201,138,0.14)]'
+                    : 'border-[var(--border-standard)] bg-[var(--bg-secondary)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-surface)] hover:text-[var(--text-primary)]'
                 }`}
               >
                 {item.label}
@@ -46,10 +46,10 @@ function App() {
       </header>
 
       <main className="p-4 sm:p-8">
-        <div className="mb-6 flex items-center gap-2 text-xs text-[#8B7A65]">
+        <div className="mb-6 flex items-center gap-2 text-xs text-[var(--text-muted)]">
           <span>ThemisOS</span>
           <span>/</span>
-          <span className="text-[#C8A96B]">{activeLabel}</span>
+          <span className="text-[var(--accent-gold)]">{activeLabel}</span>
         </div>
 
         {activeSection === 'explorer' && <Explorer />}

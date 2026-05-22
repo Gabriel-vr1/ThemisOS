@@ -1,12 +1,71 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    background: #0E0B09;
-  }
+:root {
+  --bg-main: #0E0B09;
+  --bg-secondary: #15110E;
+  --bg-surface: #1E1713;
+  --bg-raised: #2A201A;
 
-  h1 {
-    font-family: Georgia, Cambria, "Times New Roman", serif;
-    letter-spacing: 0;
-  }
+  /* Cool contrast panel.
+     Use this to prevent the app becoming muddy brown.
+     Prefer it for graph containers, detail sidebars, selected panels,
+     and secondary analytical containers. */
+  --bg-panel-cool: #1B1D2A;
+
+  --text-primary: #F3E7D0;
+  --text-secondary: #D0BFA3;
+  --text-muted: #8B7A65;
+
+  --accent-gold: #C8A96B;
+  --accent-brass: #E0C98A;
+  --accent-burgundy: #5E2230;
+  --accent-oxblood: #3A1118;
+  --accent-navy: #1D2B44;
+  --accent-blue: #355C8A;
+  --accent-green: #2F5B42;
+
+  --border-standard: #4A3727;
+  --border-strong: #7A6038;
+  --border-cool: #2C3346;
+
+  --risk-unacceptable: #8F2D3F;
+  --risk-high: #B07A2A;
+  --risk-limited: #355C8A;
+  --risk-minimal: #3F6B4E;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: Georgia, Cambria, "Times New Roman", serif;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-standard);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-gold);
 }

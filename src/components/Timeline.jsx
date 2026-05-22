@@ -59,11 +59,11 @@ function Timeline() {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <section className="rounded-xl border border-[#4A3727] bg-[#1E1713] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(243,231,208,0.035)]">
+      <section className="rounded-xl border border-[var(--border-standard)] bg-[var(--bg-surface)] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.24),inset_0_1px_0_rgba(243,231,208,0.035)]">
         <div className="max-w-3xl">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[#C8A96B]">Implementation Timeline</p>
-          <h1 className="mt-2 text-2xl font-semibold text-[#F3E7D0]">EU AI Act milestones</h1>
-          <p className="mt-2 text-sm leading-relaxed text-[#8B7A65]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--accent-gold)]">Implementation Timeline</p>
+          <h1 className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">EU AI Act milestones</h1>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
             Track the phased implementation of the EU AI Act from entry into force through major enforcement deadlines.
           </p>
         </div>
@@ -73,8 +73,8 @@ function Timeline() {
             onClick={() => setActiveYear('all')}
             className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
               activeYear === 'all'
-                ? 'border-[#7A6038] bg-[#4A3727] text-[#F3E7D0]'
-                : 'border-[#4A3727] text-[#8B7A65] hover:border-[#7A6038] hover:text-[#D0BFA3]'
+                ? 'border-[var(--accent-gold)] bg-[var(--accent-navy)] text-[var(--accent-brass)]'
+                : 'border-[var(--border-standard)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]'
             }`}
           >
             All years
@@ -85,8 +85,8 @@ function Timeline() {
               onClick={() => setActiveYear(year)}
               className={`shrink-0 rounded-full border px-3 py-1.5 text-xs transition-all ${
                 activeYear === year
-                  ? 'border-[#7A6038] bg-[#7A6038]/20 text-[#F3E7D0]'
-                  : 'border-[#4A3727] text-[#8B7A65] hover:border-[#7A6038] hover:text-[#D0BFA3]'
+                  ? 'border-[var(--accent-gold)] bg-[var(--accent-navy)] text-[var(--accent-brass)]'
+                  : 'border-[var(--border-standard)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]'
               }`}
             >
               {year}
@@ -104,29 +104,29 @@ function Timeline() {
                 onClick={() => setSelectedId(milestone.date)}
                 className={`group grid gap-4 rounded-xl border p-4 text-left transition-colors md:grid-cols-[120px_minmax(0,1fr)] ${
                   selected
-                    ? 'border-[#7A6038]/50 bg-[#7A6038]/10'
-                    : 'border-[#4A3727] bg-[#2A201A]/60 hover:border-[#7A6038]'
+                    ? 'border-[var(--accent-gold)] bg-[var(--bg-raised)]'
+                    : 'border-[var(--border-standard)] bg-[var(--bg-raised)]/60 hover:border-[var(--border-strong)]'
                 }`}
               >
                 <div>
-                  <p className="text-2xl font-semibold text-[#F3E7D0]">{milestone.year}</p>
-                  <p className="mt-1 text-xs text-[#8B7A65]">{formatDate(milestone.date)}</p>
+                  <p className="text-2xl font-semibold text-[var(--text-primary)]">{milestone.year}</p>
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">{formatDate(milestone.date)}</p>
                   <span className={`mt-3 inline-flex rounded-full px-2 py-1 text-xs font-medium ${
                     milestone.status === 'In force'
-                      ? 'bg-[#3F6B4E]/15 text-[#D0BFA3]'
-                      : 'bg-[#7A6038]/15 text-[#E0C98A]'
+                      ? 'bg-[var(--risk-minimal)]/15 text-[var(--text-secondary)]'
+                      : 'bg-[var(--border-strong)]/15 text-[var(--accent-brass)]'
                   }`}>
                     {milestone.status}
                   </span>
                 </div>
 
                 <div className="relative">
-                  <div className="absolute -left-6 top-1 hidden h-full w-px bg-[#2A201A] md:block" />
-                  <div className="absolute -left-[29px] top-1 hidden h-2 w-2 rounded-full bg-[#C8A96B] md:block" />
-                  <p className="text-sm font-semibold text-[#F3E7D0]">{index + 1}. {milestone.label}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-[#8B7A65]">{milestone.description}</p>
-                  <p className="mt-3 text-xs leading-relaxed text-[#D0BFA3]">
-                    <span className="font-semibold text-[#8B7A65]">Significance: </span>
+                  <div className="absolute -left-6 top-1 hidden h-full w-px bg-[var(--bg-raised)] md:block" />
+                  <div className="absolute -left-[29px] top-1 hidden h-2 w-2 rounded-full bg-[var(--accent-gold)] md:block" />
+                  <p className="text-sm font-semibold text-[var(--text-primary)]">{index + 1}. {milestone.label}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{milestone.description}</p>
+                  <p className="mt-3 text-xs leading-relaxed text-[var(--text-secondary)]">
+                    <span className="font-semibold text-[var(--text-muted)]">Significance: </span>
                     {milestone.significance}
                   </p>
                 </div>
@@ -137,29 +137,29 @@ function Timeline() {
       </section>
 
       {selectedMilestone && (
-        <aside className="rounded-xl border border-[#2C3346] bg-[#211A24] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(243,231,208,0.035)]">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Selected Milestone</p>
-          <div className="mt-3 rounded-lg border border-[#4A3727] bg-[#2A201A]/70 p-4">
-            <p className="text-3xl font-semibold text-[#F3E7D0]">{selectedMilestone.year}</p>
-            <p className="mt-1 text-sm text-[#E0C98A]">{formatDate(selectedMilestone.date)}</p>
-            <h2 className="mt-4 text-base font-semibold text-[#F3E7D0]">{selectedMilestone.label}</h2>
-            <p className="mt-3 text-sm leading-relaxed text-[#8B7A65]">{selectedMilestone.description}</p>
+        <aside className="rounded-xl border border-[var(--border-cool)] bg-[var(--bg-panel-cool)] p-5 shadow-[0_22px_60px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(243,231,208,0.035)]">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Selected Milestone</p>
+          <div className="mt-3 rounded-lg border border-[var(--border-standard)] bg-[var(--bg-raised)]/70 p-4">
+            <p className="text-3xl font-semibold text-[var(--text-primary)]">{selectedMilestone.year}</p>
+            <p className="mt-1 text-sm text-[var(--accent-brass)]">{formatDate(selectedMilestone.date)}</p>
+            <h2 className="mt-4 text-base font-semibold text-[var(--text-primary)]">{selectedMilestone.label}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--text-muted)]">{selectedMilestone.description}</p>
           </div>
 
           <div className="mt-5 space-y-4">
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Enforcement Significance</h3>
-              <p className="mt-2 rounded-md border border-[#4A3727] bg-[#2A201A]/75 p-3 text-xs leading-relaxed text-[#D0BFA3]">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Enforcement Significance</h3>
+              <p className="mt-2 rounded-md border border-[var(--border-standard)] bg-[var(--bg-raised)]/75 p-3 text-xs leading-relaxed text-[var(--text-secondary)]">
                 {selectedMilestone.significance}
               </p>
             </div>
 
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#8B7A65]">Status</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Status</h3>
               <p className={`mt-2 inline-flex rounded-full px-2 py-1 text-xs font-medium ${
                 selectedMilestone.status === 'In force'
-                  ? 'bg-[#3F6B4E]/15 text-[#D0BFA3]'
-                  : 'bg-[#7A6038]/15 text-[#E0C98A]'
+                  ? 'bg-[var(--risk-minimal)]/15 text-[var(--text-secondary)]'
+                  : 'bg-[var(--border-strong)]/15 text-[var(--accent-brass)]'
               }`}>
                 {selectedMilestone.status}
               </p>

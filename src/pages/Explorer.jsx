@@ -4,8 +4,8 @@ function Explorer() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-[#F3E7D0]">AI Regulation Explorer</h1>
-        <p className="mt-1 text-sm text-[#8B7A65]">
+        <h1 className="text-2xl font-semibold text-[var(--text-primary)]">AI Regulation Explorer</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Navigate the EU AI Act — click any node to explore risk classifications, obligations, and enforcement timelines.
         </p>
       </div>
