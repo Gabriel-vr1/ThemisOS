@@ -16,8 +16,15 @@ function App() {
   const activeLabel = NAV_ITEMS.find(item => item.id === activeSection)?.label
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)]">
-      <header className="border-b border-[var(--border-standard)] bg-[var(--bg-secondary)] px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.24),inset_0_-1px_0_rgba(200,169,107,0.14)] sm:px-8">
+    <div className="themis-app min-h-screen bg-[var(--bg-main)] text-[var(--text-primary)]">
+      <div className="themis-ambient" aria-hidden="true">
+        <div className="themis-ambient__light themis-ambient__light--one" />
+        <div className="themis-ambient__light themis-ambient__light--two" />
+        <div className="themis-ambient__grain" />
+        <div className="themis-ambient__vignette" />
+      </div>
+
+      <header className="themis-header relative z-10 border-b border-[var(--border-standard)] bg-[var(--bg-secondary)]/92 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.24),inset_0_-1px_0_rgba(200,169,107,0.14)] sm:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3">
             <span className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--accent-gold)]/35 bg-[var(--bg-raised)] text-sm font-semibold text-[var(--accent-gold)] shadow-[inset_0_1px_0_rgba(243,231,208,0.07)]">
@@ -45,7 +52,7 @@ function App() {
         </div>
       </header>
 
-      <main className="p-4 sm:p-8">
+      <main className="relative z-10 p-4 sm:p-8">
         <div className="mb-6 flex items-center gap-2 text-xs text-[var(--text-muted)]">
           <span>ThemisOS</span>
           <span>/</span>
